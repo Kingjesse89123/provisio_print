@@ -1,0 +1,12 @@
+POST https://gateway-sb.clearent.net/rest/v2/mobile/transactions/sale
+Accept:application/json
+Content-Type:application/json
+api-key:89bd58856efe43e48c280c130f9b0117
+mobilejwt:eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGUtand0LWV4Y2hhbmdlLWNoYWluLWlkIjoiSUQtY2xlYXJlbnQtbW9iaWxlLWp3dC0yLTg1MTg4ZjQ5LWRmNDQtNDI5OC1hOTBmLWRkZmQ3ZTM1MmI1NCIsImxhc3QtZm91ciI6IjExMTEiLCJiaW4iOiI0MTExMTEiLCJ0eXBlIjoiTUFOVUFMIiwiZXhwIjoxNjcwMTA4NzUwLCJ0b2tlbiI6IjExMDAwMDAwMDAwMzY2NDQifQ.5Pn7AtVXSgk7VGPIR4WW5Hqsp26PWX4SbhN2objdWe8
+
+{
+  "type": "SALE",
+  "amount": "15.55",
+  "software-type": "Blueplate-Provisio",
+  "software-type-version":"1"
+}

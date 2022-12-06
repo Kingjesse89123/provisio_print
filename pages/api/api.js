@@ -1,12 +1,19 @@
 import Axios from 'axios'
 
 const api = Axios.create({
-    baseURL: 'https://demo.blueplate.ai/wp-json/wc/v3/',
-    headers: {
-        'Authorization': 'Basic Y2tfYzMwN2RjNjJjNDg1MDljMTc5NmRhZTFmNGY0ODkzMmQzOWJhNTJkMTpjc18zNjZkMDA4MTQ1ZjcxYTE3OTE5OTUyMGU2YTQ1MmJkNzMxN2EwOTE4'
-    }
+    baseURL: 'https://snkdvocb.directus.app/',
+
 });
 
-export const getProducts = () => api.get('products/?per_page=100').then(res=>res.data)
+export const getProducts = () => api.get('items/Products?filter[Restaraunt][Name]=Taste!').then(res=>res.data)
 
-export const getCategories = () => api.get('products/categories').then(res=>res.data)
+export const getCategories = () => api.get('items/Catagory').then(res=>res.data)
+
+export const getInfo= () => api.get('items/Restaraunt').then(res=>res.data)
+
+export const sendOrder = (total, items) => api.post('items/Order', {
+Amount: total,
+Product: {items},
+}).then(res=>console.log(res))
+
+// export const getImg= () => api.get('assets/').then(res=>res.data)

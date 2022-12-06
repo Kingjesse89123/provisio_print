@@ -1,7 +1,15 @@
 import {useContext, useEffect, useState} from "react";
 import toast from "react-hot-toast";
-import ClearentSDK from "https://gateway-sb.clearent.net/js-sdk/js/clearent-host.js"
 import Script from "next/script";
+import {CartContext} from "../components/CartContext";
+import ProductRow from "../components/ProductRow";
+import TipButton from "../components/TipButton";
+import Link from 'next'
+import FulfillmentButton from "../components/FulfillmentButton";
+import * as clearentapi from './api/clearentapi'
+import Axios from "axios";
+import PaymentFields from "../components/PaymentFields";
+import {sendOrder} from "./api/api";
 
 export default function Checkout(){
 
@@ -27,8 +35,25 @@ export default function Checkout(){
 
     const [name, setName] = useState('')
 
-    function handleAddTip(){
+    const {cartItems, subtotal} = useContext(CartContext)
+    const [tip, setTip] = useState(0)
+    // Cart Variables
+    let tax = subtotal*0.0875
+    let c_fee = (subtotal+tax+tip)*0.0399
+    let total = subtotal+tax+c_fee+tip
+
+    let tax_d = Number(tax.toFixed(2))
+    let c_fee_d = Number(c_fee.toFixed(2))
+    let total_d = Number(total.toFixed(2))
+
+    const [orderStatus, setOrderStatus] = useState({
+        status: 'inprogress',
+        message: null,
+    })
+
+    function handleAddTip(e){
         event.preventDefault()
+        setTip(e.target.innerHTML)
         toast.success('Tip added. Thanks!', {icon:'🤩'})
     }
 
@@ -37,88 +62,197 @@ export default function Checkout(){
         toast.success('Coupon added successfully.')
     }
 
-const [cartState, setCartState] = useState('Your cart is currently empty')
-
-    useEffect(()=>{
-        if (localStorage){
-            setCartState(localStorage.getItem('cart'))
-        }
-    },[])
 
     // When you get a successful token response and
     // use this to make a sale/auth on your backend
-    function ClearentTokenSuccess(raw, json) {
-        console.log("ClearentTokenSuccess");
-        console.log(raw);
-        console.log(json);
-
-        // now you can send the token to your server
-        // to complete the transaction via mobile-gateway
-
+    function initClearentSDK() {
+        ClearentSDK.init({
+            "baseUrl": "https://gateway-sb.clearent.net",
+            "pk": "307a301406072a8648ce3d020106092b240303020801010c0362000476f0a34bd52f10510c0945b952aaa1d54411d2a2826d236c4c81cbcff0e0cbe48f26396fee633d2cfea5f0bdfe00955a1521b732cda480fde7ae64c0fc99eef20b16ae775700d414711d1e9f5edcbd80da9f2ea2d35d8cb6b03b2c159f2bfb6e",
+        });
     }
 
+    function handleOrderPlaced(){
+        ClearentSDK.getPaymentToken().then(
+            (result) => {
+                // this function is called if getting a payment token was successful
+                console.log("ClearentTokenSuccess");
+                clearentapi.sendJWT(result.payload['mobile-jwt'].jwt, total_d)
+                    .then(res=>setOrderStatus({
+                        status: 'processing',
+                        message: 'Transaction Approved! Submitting your order.'
+                    })+sendOrder(total_d, '0f905a6f-3c77-40c4-8eb4-0808106e6aa5'))
+                    .catch(error=>setOrderStatus(
+                        {status: 'error', message: error?.response.data.payload.transaction['display-message']}
+                    ))
+            },
+            (error) => {
+                // this function is called if getting a payment token failed
+                setOrderStatus({
+                    status: 'error',
+                    message: error.payload.error['error-message']
+                })
+            }
+        );
+    }
+    function ClearentTokenSuccess(raw, json) {
+    }
     function ClearentTokenError(raw, json) {
         console.log("ClearentTokenError");
         console.log(raw);
         console.log(json);
-
     }
 
-    ClearentSDK.init({
-        "baseUrl": "https://gateway-sb.clearent.net",
-        "pk": "YOUR PUBLIC KEY GOES HERE"
-    });
+
+
+    const [fulfillmentType, setFulfillmentType] = useState('Pickup')
+
+    function handleChangeFulfillmentType(e){
+        event.preventDefault()
+        setFulfillmentType(e.target.value)
+    }
+
+/*    if(cartItems.length===0){
+        return (<div><p className='text-xl font-default text-center mt-6'>It looks like your order is empty. No worries!
+                Return to the front
+                page to begin placing your order.</p>
+            </div>
+        )
+
+    }*/
 
     return(
-        <div className='text-center'>
-        <h1 className='mt-8 text-5xl font-default font-bold'>Checkout</h1>
-            <Script src="https://gateway-sb.clearent.net/js-sdk/js/clearent-host.js"></Script>
+        <div className=''>
+        <h1 className='mt-8 text-5xl font-default font-bold text-center'>Checkout</h1>
+            <Script src="https://gateway-sb.clearent.net/js-sdk/js/clearent-host.js" onLoad={initClearentSDK}></Script>
             <div>
-                <div id='tip-block'>
-                <h1 className='mt-16 text-3xl font-default font-bold'>Leave a tip</h1>
+                <div id='tip-block' className='text-center'>
+                <h1 className='mt-16 text-3xl font-default font-light'>Leave a tip</h1>
+                        <TipButton
+                        tipAmount={15}
+                        addTip={handleAddTip}
+                        />
+                        <TipButton
+                            tipAmount={18}
+                            addTip={handleAddTip}
+                        />
+                        <TipButton
+                            tipAmount={20}
+                            addTip={handleAddTip}
+                        />
                 <p className='mt-2 text-xl font-default'>It would be much appreciated, and every bit counts.</p>
-                    <form>
-                        <button onClick={handleAddTip} className='transition ease-in-out delay-150 px-12 p-6 bg-blue-500 m-2 text-white rounded-xl font-default font-bold text-2xl hover:shadow-md hover:-translate-y-1'>15%</button>
-                        <button onClick={handleAddTip} className='transition ease-in-out delay-150 px-12 p-6 bg-blue-500 m-2 text-white rounded-xl font-default font-bold text-2xl hover:shadow-md hover:-translate-y-1'>20%</button>
-                        <button onClick={handleAddTip} className='transition ease-in-out delay-150 px-12 p-6 bg-blue-500 m-2 text-white rounded-xl font-default font-bold text-2xl hover:shadow-md hover:-translate-y-1'>25%</button>
-                    </form>
                 </div>
             </div>
-            <div id='contact-info-block'>
-                <form className='mt-16'>
-                    <h1 className='mt-6 text-3xl font-default font-bold'>Contact Information</h1>
-                    <input className='rounded w-1/3 border-2 border-grey-500 p-4 font-default m-2' placeholder='First Name'
-                           required='true' onChange={(e)=>{setName(e.target.value)}}/>
-                    <input className='rounded w-1/3 border-2 border-grey-500 p-4 font-default m-2' placeholder='Last Name'/>
-                    <input className='rounded w-1/3 border-2 border-grey-500 p-4 font-default m-2' placeholder='Email'
-                           type='email'/>
-                    <input className='rounded w-1/3 border-2 border-grey-500 p-4 font-default m-2' onChange={(e) => {
-                        handleInput(e)
-                    }} value={inputValue} placeholder='Phone Number' type='phone'/>
-                </form>
-            </div>
-            <div id='cart-block mt-8'>
-                <h1 className='mt-16 text-3xl font-default font-bold'>Your Order</h1>
-                <p className='mt-2 text-xl font-default'>Alright, {name ? name+', ' : null} here is your order! Look it over to make sure everything looks right. You can make edits straight from this page.</p>
 
-                <div id='cart-table' className='mt-6 font-default text-xl'>
-                    <h1>{cartState}</h1>
+                <div id='fulfillment-block'>
+                    <h1 className='mt-16 text-3xl font-default font-light text-center'>Fulfillment</h1>
+                    <div className='flex justify-center'>
+                            <FulfillmentButton
+                            type='Pickup'
+                            handleClick={handleChangeFulfillmentType}
+                            selection={fulfillmentType}
+                            />
+                            <FulfillmentButton
+                                type='Delivery'
+                                handleClick={handleChangeFulfillmentType}
+                                selection={fulfillmentType}
+                            />
+                    </div>
+
                 </div>
 
+            <div id='contact-info-block' className='flex flex-col items-center gap-4'>
+                <h1 className='mt-6 text-2xl font-default font-light'>Contact Information</h1>
+                <div className='flex gap-4 justify-between'>
+                    <input className='rounded border-2 p-4 font-default' placeholder='First Name' required='true' onChange={(e) => {setName(e.target.value)}}/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='Last Name'/>
+                </div>
+                <div className='flex gap-4 justify-between'>
+                    <input className='rounded border-2 p-4 font-default' placeholder='Email' type='email'/>
+                    <input className='rounded border-2 p-4 font-default' onChange={(e) => {handleInput(e)}} value={inputValue} placeholder='Phone Number' type='phone'/>
+                </div>
+                {fulfillmentType === 'Delivery' && <div className='flex gap-4 justify-between'>
+                    <input className='rounded border-2 p-4 font-default' placeholder='Street Number'/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='City'/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='State'/>
+                </div>}
+                <input className='rounded border-2 p-4 font-default' placeholder='Zip Code' maxLength='5'/>
             </div>
-            <div id='cart-block mt-8'>
-                <h1 className='mt-16 text-3xl font-default font-bold'>Payment</h1>
-                <div id='coupon-block'>
+
+                <div className='text-center mt-8'>
+                    <h1 className='text-3xl font-default font-light'>Your Order</h1>
+                    <p className='mt-2 text-xl font-default'>Alright, {name ? name + ', ' : null} here is your order!
+                        Look it over to make sure everything looks right.</p>
+                </div>
+            <div id='cart-block' className='text-center mt-8'>
+                <div id='coupon-block' className='flex justify-center mt-8'>
                     <form onSubmit={handleAddCoupon}>
-                        <p className='font-default'>Have a coupon? Enter it below.</p>
-                        <input className='rounded w-1/3 border-2 border-grey-500 p-4 font-default m-2'/>
+                        <p className='font-default text-center'>Have a coupon? Enter it below.</p>
+                        <input className='rounded border-2 border-grey-500 p-4 font-default m-2'/>
                         <button className='px-4 p-4 bg-blue-500 m-2 text-white rounded font-default font-bold text-md'>Add Coupon</button>
                     </form>
                 </div>
-                <div id='payment-block'>
-                    <div id="payment-form"></div>
+                <div className='flex justify-center'>
+                    <div className='w-2/3 shadow-xl rounded-xl p-4'>
+                        <table id='cart-table'
+                               className='mt-6 font-default text-xl table-fixed w-full text-left'>
+                            <thead className='border-b-2 border-b-solid text-lg'>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                            </tr>
+                            </thead>
+                            {cartItems.map(cartItem => {
+                                return (
+                                    <ProductRow
+                                        key={cartItem.id}
+                                        name={cartItem.name}
+                                        price={cartItem.price}
+                                        qty={cartItem.qty}
+                                        cartId={cartItem.cartId}
+                                        selectionChoice={cartItem.selectionChoice}
+                                        ingredientChoice={cartItem.ingredientChoice}
+                                    />
+                                )
+                            })}
+                            <tfoot>
+                            <tr>
+                                <td className='font-bold'>Subtotal</td>
+                                <td>${subtotal}</td>
+                            </tr>
+                            <tr>
+                                <td className='font-bold'>Tax</td>
+                                <td>${tax_d}</td>
+                            </tr>
+                            {tip !== 0 && <tr>
+                                <td className='font-bold'>Tip</td>
+                                <td>${tip}</td>
+                            </tr>}
+                            <tr>
+                                <td className='font-bold'>Convenience Fee</td>
+                                <td>${c_fee_d}</td>
+                            </tr>
+                            <tr>
+                                <td className='font-bold'>Total</td>
+                                <td>${total_d}</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        <PaymentFields
+                        orderStatus={orderStatus}
+                        />
+                    </div>
+                </div>
+
+            </div>
+            <div>
+                <div className='flex justify-center'>
+                    <button className='px-12 p-4 bg-blue-500 text-white rounded font-default font-bold text-md mb-12 mt-4'
+                            onClick={handleOrderPlaced}>Place Order
+                    </button>
                 </div>
             </div>
+
         </div>
     )
 }
