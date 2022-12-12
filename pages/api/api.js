@@ -5,7 +5,7 @@ const api = Axios.create({
 
 });
 
-export const getProducts = () => api.get('items/Products?filter[Restaraunt][Name]=Taste!').then(res=>res.data)
+export const getProducts = () => api.get('items/Products?filter[Restaraunt][Name]=Taste!2').then(res=>res.data)
 
 export const getCategories = () => api.get('items/Catagory').then(res=>res.data)
 

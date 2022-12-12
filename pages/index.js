@@ -9,7 +9,6 @@ import ProductRow from "../components/ProductRow";
 import Closed from "../components/Alerts/Closed";
 import Alert from "../components/Alerts/Alert";
 import InfoAlert from "../components/Alerts/InfoAlert";
-import {useCart} from "react-use-cart";
 import {add} from "react-modal/lib/helpers/classList";
 import Category from "../components/Category";
 import Product from "../components/Product";
@@ -17,10 +16,12 @@ import Modal from "../components/Modal";
 import Infobar from "../components/Infobar";
 import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
-import ingredients from '../components/Modal'
+import Head from "next/head";
+
 import IngredientSelector from "../components/IngredientSelector";
 
-export default function Home() {
+export default function Index() {
+
     const categories = useQuery(['categories'], getCategories)
 
     const products = useQuery(['products'], getProducts)
@@ -28,6 +29,8 @@ export default function Home() {
     const info = useQuery(['info'], getInfo)
 
     // const img = useQuery(['img'], getImg)
+
+    const {cartItems, setCartItems} = useContext(CartContext)
 
     // Pickup Time Area
     let date = new Date()
@@ -38,6 +41,14 @@ export default function Home() {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [clickedId, setClickedId] = useState('')
 
+    useEffect(()=>{
+        let subtotal_i = 0
+        for(let i = 0; i<cartItems.length; i++){
+            subtotal_i += cartItems[i].price
+        }
+        setSubtotal(subtotal_i)
+        setItemCount(cartItems.length)
+    },[cartItems])
 
     function handleModalOpen(event) {
         setModalIsOpen(true)
@@ -57,9 +68,17 @@ export default function Home() {
 
     // Cart Area
 
+    // Generates a random 4 digit alphanumeric cart code
+    let cartId = () => {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
         const [cartExpanded, setCartExpanded] = useState(false)
 
-        const {cartItems, setCartItems} = useContext(CartContext)
+        const [itemCount, setItemCount] = useState(cartItems?.length)
+        const [menuView, setMenuView] = useState(false)
 
         const {subtotal, setSubtotal} = useContext(CartContext)
 
@@ -131,28 +150,26 @@ export default function Home() {
 
 
 
-        const [itemCount, setItemCount] = useState(cartItems.length)
-
-        const [menuView, setMenuView] = useState(false)
 
         function toggleCartExpand() {
             setCartExpanded(prevState => {
                 return !prevState
             })
         }
-
-        function handleRemoveItem(e){
-            console.log(Number(e.target.value))
-            setCartItems(cartItems.splice(e.target.value, 1))
-            setItemCount(prevState => {
-                return prevState -1
-            })
-            console.log(cartItems)
+        function handleRemoveItem(id){
+        let indexOfRemovedItem = cartItems.findIndex(item => item.cartId === id)
+        const newArray = []
+        for(let i = 0; i < cartItems.length; i++){
+            if(i!==indexOfRemovedItem){
+                newArray.push(cartItems[i])
+            }
+        }
+            setCartItems(newArray)
+            toast.error('Item removed')
         }
 
         const productBlocks = categories.data?.data.map(category => {
             return (
-
                 <div key={category.id}>
                     <Category
                     id={category.id}
@@ -178,7 +195,6 @@ export default function Home() {
             )
         })
 
-
         return (
 
             <div className='w-full'>
@@ -190,9 +206,9 @@ export default function Home() {
                                 name: modalProduct.Name,
                                 price: modalProduct.price,
                                 qty: 1,
-                                cartId: itemCount,
                                 ingredientChoice: ingredientChoice,
                                 selectionChoice: selectionChoice,
+                                cartId: cartId(),
                             }
                             setCartItems(prevState=>{
                                 return [
@@ -232,18 +248,25 @@ export default function Home() {
                     <div id='alert-area' className='w-11/12 mt-8 text-left'>
                     </div>
                 </center>
-                <Infobar
-                name={info.data?.data[0].Name}
-                address={info.data?.data[0].Address}
-                phone={info.data?.data[0].phone_number}
-                pickupTime={pickupTime}
-                closingTime={info.data?.data[0].closingtime}
-                />
+                {!products.isLoading && <Infobar
+                    name={info.data?.data[0].Name}
+                    address={info.data?.data[0].Address}
+                    phone={info.data?.data[0].phone_number}
+                    pickupTime={pickupTime}
+                    closingTime={info.data?.data[0].closingtime}
+                />}
 
-                <div id='menu-view-selection' className='bg-gray-100 font-default text-center rounded-full border-2 ml-12 border-grey border-solid w-fit'>
-                    <button onClick={handleSetMenuView} className={!menuView ? 'bg-white p-2 px-4 rounded-full mr-1' : 'p-2 px-4 rounded-full mr-1'}>Ordering View</button>
-                    <button onClick={handleSetMenuView} className={menuView ? 'bg-white p-2 px-4 rounded-full ml-1' : 'p-2 px-4 rounded-full ml-1'}>Menu View</button>
-                </div>
+                {!products.isLoading && <div id='menu-view-selection'
+                      className='bg-gray-100 font-default text-center rounded-full border-2 ml-12 border-grey border-solid w-fit'>
+                    <button onClick={handleSetMenuView}
+                            className={!menuView ? 'bg-white p-2 px-4 rounded-full mr-1' : 'p-2 px-4 rounded-full mr-1'}>Ordering
+                        View
+                    </button>
+                    <button onClick={handleSetMenuView}
+                            className={menuView ? 'bg-white p-2 px-4 rounded-full ml-1' : 'p-2 px-4 rounded-full ml-1'}>Menu
+                        View
+                    </button>
+                </div>}
 
                 {categories.isLoading ? <Spinner/> : productBlocks}
 
@@ -258,7 +281,6 @@ export default function Home() {
                 />}
 
             </div>
-
 
         )
     }

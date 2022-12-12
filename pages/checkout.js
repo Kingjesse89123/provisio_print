@@ -10,8 +10,9 @@ import * as clearentapi from './api/clearentapi'
 import Axios from "axios";
 import PaymentFields from "../components/PaymentFields";
 import {sendOrder} from "./api/api";
+import {useRouter} from "next/router";
 
-export default function Checkout(){
+export default function Checkout() {
 
     function formatPhoneNumber(value) {
         if (!value) return value;
@@ -27,22 +28,38 @@ export default function Checkout(){
         )}-${phoneNumber.slice(6, 10)}`;
     }
 
+    const router = useRouter()
+
     const [inputValue, setInputValue] = useState("")
     const handleInput = (e) => {
         const formattedPhoneNumber = formatPhoneNumber(e.target.value)
         setInputValue(formattedPhoneNumber);
+        setContactInfo(prevState => {
+            return({
+                ...prevState,
+                phone: formattedPhoneNumber
+            })
+        })
     };
 
-    const [name, setName] = useState('')
+    const [contactInfo, setContactInfo] = useState({
+        f_name: '',
+        l_name: '',
+        email: '',
+        phone: '',
+        zip: ''
+    })
 
-    const {cartItems, subtotal} = useContext(CartContext)
+    const {cartItems, setCartItems, subtotal} = useContext(CartContext)
     const [tip, setTip] = useState(0)
     // Cart Variables
-    let tax = subtotal*0.0875
-    let c_fee = (subtotal+tax+tip)*0.0399
-    let total = subtotal+tax+c_fee+tip
+    let tax = subtotal * 0.0875
+    let c_fee = (subtotal + tax + tip) * 0.0399
+    let total = (subtotal + tax + c_fee + tip)
 
+    let subtotal_d = Number(subtotal.toFixed(2))
     let tax_d = Number(tax.toFixed(2))
+    let tip_d = Number(tip.toFixed(2))
     let c_fee_d = Number(c_fee.toFixed(2))
     let total_d = Number(total.toFixed(2))
 
@@ -51,20 +68,20 @@ export default function Checkout(){
         message: null,
     })
 
-    function handleAddTip(e){
-        event.preventDefault()
-        setTip(e.target.innerHTML)
-        toast.success('Tip added. Thanks!', {icon:'🤩'})
+    function handleAddTip(e) {
+        setTip((subtotal*e.target.value)/100)
+        toast.success('Tip added. Thanks!', {icon: '🤩'})
     }
 
-    function handleAddCoupon(){
+    function handleRemoveTip(){
+        setTip(0)
+    }
+
+    function handleAddCoupon() {
         event.preventDefault()
         toast.success('Coupon added successfully.')
     }
 
-
-    // When you get a successful token response and
-    // use this to make a sale/auth on your backend
     function initClearentSDK() {
         ClearentSDK.init({
             "baseUrl": "https://gateway-sb.clearent.net",
@@ -76,12 +93,11 @@ export default function Checkout(){
         ClearentSDK.getPaymentToken().then(
             (result) => {
                 // this function is called if getting a payment token was successful
-                console.log("ClearentTokenSuccess");
-                clearentapi.sendJWT(result.payload['mobile-jwt'].jwt, total_d)
+                clearentapi.sendJWT(result.payload['mobile-jwt'].jwt, total_d, tip_d, c_fee_d, email)
                     .then(res=>setOrderStatus({
                         status: 'processing',
                         message: 'Transaction Approved! Submitting your order.'
-                    })+sendOrder(total_d, '0f905a6f-3c77-40c4-8eb4-0808106e6aa5'))
+                    })+sendOrder(total_d, '0f905a6f-3c77-40c4-8eb4-0808106e6aa5')+setCartItems([])+router.push('/confirmed'))
                     .catch(error=>setOrderStatus(
                         {status: 'error', message: error?.response.data.payload.transaction['display-message']}
                     ))
@@ -103,8 +119,6 @@ export default function Checkout(){
         console.log(json);
     }
 
-
-
     const [fulfillmentType, setFulfillmentType] = useState('Pickup')
 
     function handleChangeFulfillmentType(e){
@@ -112,37 +126,43 @@ export default function Checkout(){
         setFulfillmentType(e.target.value)
     }
 
-/*    if(cartItems.length===0){
-        return (<div><p className='text-xl font-default text-center mt-6'>It looks like your order is empty. No worries!
-                Return to the front
-                page to begin placing your order.</p>
-            </div>
+
+    if(cartItems.length===0){
+        return (<div className='font-default'>
+                <p className='text-xl text-center mt-6'>It looks like your order is empty. No worries!</p>
+                <center>
+                    <div className='w-1/3'>
+                        <button onClick={() => (router.push('/'))} className='mt-6 border-2 border-blue-500 p-2 px-12 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white'>Start your order</button>
+                    </div>
+                </center>
+                </div>
         )
 
-    }*/
+    }
+
 
     return(
         <div className=''>
         <h1 className='mt-8 text-5xl font-default font-bold text-center'>Checkout</h1>
             <Script src="https://gateway-sb.clearent.net/js-sdk/js/clearent-host.js" onLoad={initClearentSDK}></Script>
             <div>
-                <div id='tip-block' className='text-center'>
-                <h1 className='mt-16 text-3xl font-default font-light'>Leave a tip</h1>
-                        <TipButton
+                {!tip && <div id='tip-block' className='text-center'>
+                    <h1 className='mt-16 text-3xl font-default font-light'>Leave a tip</h1>
+                    <TipButton
                         tipAmount={15}
                         addTip={handleAddTip}
-                        />
-                        <TipButton
-                            tipAmount={18}
-                            addTip={handleAddTip}
-                        />
-                        <TipButton
-                            tipAmount={20}
-                            addTip={handleAddTip}
-                        />
-                <p className='mt-2 text-xl font-default'>It would be much appreciated, and every bit counts.</p>
-                </div>
-            </div>
+                    />
+                    <TipButton
+                        tipAmount={18}
+                        addTip={handleAddTip}
+                    />
+                    <TipButton
+                        tipAmount={20}
+                        addTip={handleAddTip}
+                    />
+                    <p className='mt-2 text-xl font-default'>It would be much appreciated, and every bit counts.</p>
+                </div>}
+                    </div>
 
                 <div id='fulfillment-block'>
                     <h1 className='mt-16 text-3xl font-default font-light text-center'>Fulfillment</h1>
@@ -158,17 +178,33 @@ export default function Checkout(){
                                 selection={fulfillmentType}
                             />
                     </div>
-
                 </div>
 
             <div id='contact-info-block' className='flex flex-col items-center gap-4'>
                 <h1 className='mt-6 text-2xl font-default font-light'>Contact Information</h1>
                 <div className='flex gap-4 justify-between'>
-                    <input className='rounded border-2 p-4 font-default' placeholder='First Name' required='true' onChange={(e) => {setName(e.target.value)}}/>
-                    <input className='rounded border-2 p-4 font-default' placeholder='Last Name'/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='First Name' required='true' onChange={(e) => {setContactInfo(prevState => {
+                        return({
+                            ...prevState,
+                            f_name: e.target.value
+                        })
+                    })}}/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='Last Name' onChange={(e) => {setContactInfo(prevState => {
+                        return({
+                            ...prevState,
+                            l_name: e.target.value
+                        })
+                    })}}/>
                 </div>
                 <div className='flex gap-4 justify-between'>
-                    <input className='rounded border-2 p-4 font-default' placeholder='Email' type='email'/>
+                    <input className='rounded border-2 p-4 font-default' placeholder='Email' type='email' onChange={(e)=>{setContactInfo(prevState => {
+                        return(
+                            {
+                                ...prevState,
+                                email: e.target.value,
+                            }
+                        )
+                    })}}/>
                     <input className='rounded border-2 p-4 font-default' onChange={(e) => {handleInput(e)}} value={inputValue} placeholder='Phone Number' type='phone'/>
                 </div>
                 {fulfillmentType === 'Delivery' && <div className='flex gap-4 justify-between'>
@@ -176,12 +212,19 @@ export default function Checkout(){
                     <input className='rounded border-2 p-4 font-default' placeholder='City'/>
                     <input className='rounded border-2 p-4 font-default' placeholder='State'/>
                 </div>}
-                <input className='rounded border-2 p-4 font-default' placeholder='Zip Code' maxLength='5'/>
+                <input className='rounded border-2 p-4 font-default' placeholder='Zip Code' maxLength='5' onChange={e=>{setContactInfo(prevState => {
+                    return(
+                        {
+                            ...prevState,
+                            zip: e.target.value
+                        }
+                    )
+                })}}/>
             </div>
 
                 <div className='text-center mt-8'>
                     <h1 className='text-3xl font-default font-light'>Your Order</h1>
-                    <p className='mt-2 text-xl font-default'>Alright, {name ? name + ', ' : null} here is your order!
+                    <p className='mt-2 text-xl font-default'>Alright, {contactInfo.f_name ? contactInfo.f_name + ', ' : null} here is your order!
                         Look it over to make sure everything looks right.</p>
                 </div>
             <div id='cart-block' className='text-center mt-8'>
@@ -218,7 +261,7 @@ export default function Checkout(){
                             <tfoot>
                             <tr>
                                 <td className='font-bold'>Subtotal</td>
-                                <td>${subtotal}</td>
+                                <td>${subtotal_d}</td>
                             </tr>
                             <tr>
                                 <td className='font-bold'>Tax</td>
@@ -226,7 +269,7 @@ export default function Checkout(){
                             </tr>
                             {tip !== 0 && <tr>
                                 <td className='font-bold'>Tip</td>
-                                <td>${tip}</td>
+                                <td>${tip_d }</td>
                             </tr>}
                             <tr>
                                 <td className='font-bold'>Convenience Fee</td>
@@ -240,19 +283,29 @@ export default function Checkout(){
                         </table>
                         <PaymentFields
                         orderStatus={orderStatus}
+                        initClearentSDK={initClearentSDK}
                         />
                     </div>
                 </div>
 
             </div>
             <div>
+                <div className='flex justify-center content-center mt-2'>
+                    <div className='flex-col font-default text-red-500'>
+                        {!contactInfo.f_name && <h1>First name is required</h1>}
+                        {!contactInfo.l_name && <h1>Last name is required</h1>}
+                        {!contactInfo.email && <h1>Email is required</h1>}
+                        {!contactInfo.phone && <h1>Phone number is required</h1>}
+                        {!contactInfo.zip && <h1>Zip code is required</h1>}
+                    </div>
+                </div>
                 <div className='flex justify-center'>
-                    <button className='px-12 p-4 bg-blue-500 text-white rounded font-default font-bold text-md mb-12 mt-4'
-                            onClick={handleOrderPlaced}>Place Order
+                    <button
+                        className='px-12 p-4 bg-blue-500 text-white rounded font-default font-bold text-md mb-12 mt-4 disabled:bg-slate-300'
+                        onClick={handleOrderPlaced} disabled={!(contactInfo.f_name && contactInfo.l_name && contactInfo.email && contactInfo.phone && contactInfo.zip)}>Place Order
                     </button>
                 </div>
             </div>
-
         </div>
     )
 }
