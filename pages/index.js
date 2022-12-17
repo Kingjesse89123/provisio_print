@@ -2,23 +2,16 @@ import {useContext, useEffect, useState} from "react";
 import {getCategories, getProducts, getInfo, getImg} from './api/api'
 import toast from "react-hot-toast";
 import {useQuery} from "react-query";
-import Link from 'next/link'
 import ReactModal from 'react-modal'
 import Spinner from "../components/Spinner";
-import ProductRow from "../components/ProductRow";
-import Closed from "../components/Alerts/Closed";
 import Alert from "../components/Alerts/Alert";
-import InfoAlert from "../components/Alerts/InfoAlert";
-import {add} from "react-modal/lib/helpers/classList";
 import Category from "../components/Category";
 import Product from "../components/Product";
 import Modal from "../components/Modal";
 import Infobar from "../components/Infobar";
 import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
-import Head from "next/head";
-
-import IngredientSelector from "../components/IngredientSelector";
+import {DateTime} from "luxon";
 
 export default function Index() {
 
@@ -30,12 +23,7 @@ export default function Index() {
 
     // const img = useQuery(['img'], getImg)
 
-    const {cartItems, setCartItems} = useContext(CartContext)
-
-    // Pickup Time Area
-    let date = new Date()
-    let currentTime = date.getHours() + ':' + date.getMinutes()
-    const [pickupTime, setPickupTime] = useState(currentTime)
+    const {cartItems, setCartItems, pickupTime} = useContext(CartContext)
 
     // Modal area
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -67,7 +55,6 @@ export default function Index() {
     }
 
     // Cart Area
-
     // Generates a random 4 digit alphanumeric cart code
     let cartId = () => {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -80,7 +67,9 @@ export default function Index() {
         const [itemCount, setItemCount] = useState(cartItems?.length)
         const [menuView, setMenuView] = useState(false)
 
-        const {subtotal, setSubtotal} = useContext(CartContext)
+        const {subtotal, setSubtotal, closingTime, setClosingTime} = useContext(CartContext)
+
+            setClosingTime(info.data?.data[0].closingtime)
 
         const [selectionChoice, setSelectionChoice] = useState()
 
@@ -148,9 +137,6 @@ export default function Index() {
         }))
     }
 
-
-
-
         function toggleCartExpand() {
             setCartExpanded(prevState => {
                 return !prevState
@@ -201,6 +187,34 @@ export default function Index() {
                 <ReactModal isOpen={modalIsOpen}>
                     {products.data?.data.map(modalProduct => {
                         function handleAddToCart(){
+
+                            let cartIds = []
+
+                            let cartQty = []
+
+                            for(let i=0; i<cartItems.length; i++){
+                                cartIds.push(cartItems[i].id)
+                            }
+
+                            let cartIds2 = []
+                            let count
+                            for(let i=0; i<cartIds.length; i++){
+                                if(cartIds2.indexOf(cartIds[i]) === -1){
+                                    cartIds2.push(cartIds[i])
+                                    cartQty.splice(i, 0, 1)
+                                    console.log('Unique!')
+                                    console.log(cartQty)
+                                } else {
+                                    count = cartQty[cartIds2.indexOf(cartIds[i])]
+                                    count++
+                                    console.log(count)
+                                    cartQty.splice(cartIds2.indexOf(cartIds[i]), 1, count)
+                                    console.log('Already exists')
+                                    console.log(cartQty)
+                                    console.log(cartIds2)
+                                }
+                            }
+
                             let currentItem = {
                                 id: modalProduct.id,
                                 name: modalProduct.Name,
@@ -215,12 +229,6 @@ export default function Index() {
                                     ...prevState,
                                         currentItem
                                 ]
-                            })
-                            setItemCount(prevState => {
-                                return prevState+1
-                            })
-                            setSubtotal(prevState => {
-                                return prevState+currentItem.price
                             })
                             handleModalClose()
                             toast.success('Item added to order!')
@@ -246,6 +254,7 @@ export default function Index() {
                 </ReactModal>
                 <center>
                     <div id='alert-area' className='w-11/12 mt-8 text-left'>
+                        {pickupTime > info.data?.data[0].closingtime ? <Alert title="Closed." text="Right now, this restaurant is closed. Check back later!" action='Feel free to browse the menu in the meantime.'/> : null}
                     </div>
                 </center>
                 {!products.isLoading && <Infobar

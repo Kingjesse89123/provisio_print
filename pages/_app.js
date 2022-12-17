@@ -14,6 +14,8 @@ import {CartContext} from "../components/CartContext";
 
 import Freshchat from "../lib/freshchat";
 import Script from "next/script";
+//
+import { DateTime } from "luxon";
 
 
 function MyApp({ Component, pageProps }) {
@@ -24,7 +26,13 @@ function MyApp({ Component, pageProps }) {
 
     const [subtotal, setSubtotal] = useState(0)
 
-    const initialRender = useRef(true);
+    const initialRender = useRef(true)
+
+    let dt = DateTime.now().plus({minute:20})
+    dt.toLocaleString(DateTime.TIME_SIMPLE)
+
+    const [pickupTime, setPickupTime] = useState(dt.hour+':'+dt.minute)
+    const [closingTime, setClosingTime] = useState()
 
     useEffect(() => {
         if (JSON.parse(localStorage.getItem("cartItems"))) {
@@ -45,7 +53,7 @@ function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
               <Toaster position="top-center" reverseOrder={false}/>
           <Header/>
-          <CartContext.Provider value={{cartItems, setCartItems, subtotal, setSubtotal}}>
+          <CartContext.Provider value={{cartItems, setCartItems, subtotal, setSubtotal, pickupTime, closingTime, setClosingTime}}>
               <Component {...pageProps} />
           </CartContext.Provider>
               <ReactQueryDevtools/>

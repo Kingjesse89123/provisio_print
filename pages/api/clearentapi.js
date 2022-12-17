@@ -9,4 +9,4 @@ const clearentapi = Axios.create({
         }
 });
 
-export const sendJWT = (JWT, total, tip, c_fee, email) => clearentapi.post('rest/v2/mobile/transactions/sale', {type: 'SALE', amount: total, "software-type":"Blueplate", "software-type-version":"Provisio", 'service-fee': c_fee, 'email-receipt':email,email: email}, {headers: {'mobilejwt' : JWT}})
+export const sendJWT = (jwt, data) => clearentapi.post('rest/v2/mobile/transactions/sale', data, {headers: {'mobilejwt' : jwt}})

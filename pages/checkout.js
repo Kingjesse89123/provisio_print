@@ -11,9 +11,9 @@ import Axios from "axios";
 import PaymentFields from "../components/PaymentFields";
 import {sendOrder} from "./api/api";
 import {useRouter} from "next/router";
+import {DateTime} from "luxon";
 
 export default function Checkout() {
-
     function formatPhoneNumber(value) {
         if (!value) return value;
         const phoneNumber = value.replace(/[^\d]/g, "");
@@ -50,18 +50,21 @@ export default function Checkout() {
         zip: ''
     })
 
-    const {cartItems, setCartItems, subtotal} = useContext(CartContext)
-    const [tip, setTip] = useState(0)
+    const {cartItems, setCartItems, subtotal, pickupTime, closingTime} = useContext(CartContext)
+
+    const [fulfillmentTimeToggle, setFulfillmentTimeToggle] = useState(false)
+    const [tip, setTip] = useState(0.00)
     // Cart Variables
     let tax = subtotal * 0.0875
     let c_fee = (subtotal + tax + tip) * 0.0399
     let total = (subtotal + tax + c_fee + tip)
 
-    let subtotal_d = Number(subtotal.toFixed(2))
-    let tax_d = Number(tax.toFixed(2))
-    let tip_d = Number(tip.toFixed(2))
-    let c_fee_d = Number(c_fee.toFixed(2))
-    let total_d = Number(total.toFixed(2))
+    let subtotal_d = subtotal.toFixed(2)
+    let tax_d = tax.toFixed(2)
+    let tip_d = tip.toFixed(2)
+    let c_fee_d = c_fee.toFixed(2)
+    let total_d = total.toFixed(2)
+
 
     const [orderStatus, setOrderStatus] = useState({
         status: 'inprogress',
@@ -77,23 +80,66 @@ export default function Checkout() {
         setTip(0)
     }
 
+    function renderPickupTimes(){
+        console.log(pickupTime)
+        console.log(closingTime)
+        let pickup_i = DateTime.fromISO(pickupTime)
+        let closing_i = DateTime.fromISO(closingTime)
+        let diff = closing_i.diff(pickup_i, 'minutes')
+        let diffInMinutes = diff.values.minutes
+        console.log(diffInMinutes%20)
+    }
+
+    function handleChangePickupTime(){
+        event.preventDefault()
+        setFulfillmentTimeToggle(prevState => {
+            return !prevState
+        })
+    }
+
     function handleAddCoupon() {
         event.preventDefault()
         toast.success('Coupon added successfully.')
     }
 
     function initClearentSDK() {
-        ClearentSDK.init({
-            "baseUrl": "https://gateway-sb.clearent.net",
-            "pk": "307a301406072a8648ce3d020106092b240303020801010c0362000476f0a34bd52f10510c0945b952aaa1d54411d2a2826d236c4c81cbcff0e0cbe48f26396fee633d2cfea5f0bdfe00955a1521b732cda480fde7ae64c0fc99eef20b16ae775700d414711d1e9f5edcbd80da9f2ea2d35d8cb6b03b2c159f2bfb6e",
-        });
+        try {
+            if (ClearentSDK?.initialized) {
+                ClearentSDK.reset();
+            }
+
+            ClearentSDK.init({
+                "baseUrl": "https://gateway-sb.clearent.net",
+                "pk": "307a301406072a8648ce3d020106092b240303020801010c0362000476f0a34bd52f10510c0945b952aaa1d54411d2a2826d236c4c81cbcff0e0cbe48f26396fee633d2cfea5f0bdfe00955a1521b732cda480fde7ae64c0fc99eef20b16ae775700d414711d1e9f5edcbd80da9f2ea2d35d8cb6b03b2c159f2bfb6e",
+            });
+        } catch (error) {
+            // doing this to ignore undefined error
+        }
     }
 
     function handleOrderPlaced(){
+
         ClearentSDK.getPaymentToken().then(
             (result) => {
                 // this function is called if getting a payment token was successful
-                clearentapi.sendJWT(result.payload['mobile-jwt'].jwt, total_d, tip_d, c_fee_d, email)
+                clearentapi.sendJWT(result.payload['mobile-jwt'].jwt,
+                    {
+                    type: 'SALE',
+                    amount: total_d,
+                    "sales-tax-amount":tax_d,
+                    "sales-tax-type":"LOCAL_SALES_TAX",
+                    "software-type":"Blueplate",
+                    "software-type-version":"Provisio",
+                    'service-fee': c_fee_d,
+                    'tip':tip_d,
+                    'email-receipt':contactInfo.email,
+                    email: contactInfo.email,
+                    'billing-is-shipping':'true',
+                    'billing':{
+                        'from-zip':contactInfo.zip
+                    },
+                    }
+                )
                     .then(res=>setOrderStatus({
                         status: 'processing',
                         message: 'Transaction Approved! Submitting your order.'
@@ -126,6 +172,7 @@ export default function Checkout() {
         setFulfillmentType(e.target.value)
     }
 
+    useEffect(()=> initClearentSDK(), []);
 
     if(cartItems.length===0){
         return (<div className='font-default'>
@@ -139,8 +186,6 @@ export default function Checkout() {
         )
 
     }
-
-
     return(
         <div className=''>
         <h1 className='mt-8 text-5xl font-default font-bold text-center'>Checkout</h1>
@@ -177,6 +222,15 @@ export default function Checkout() {
                                 handleClick={handleChangeFulfillmentType}
                                 selection={fulfillmentType}
                             />
+                    </div>
+                    <div className='flex flex-col justify-center'><h1
+                        className='text-center text-xl font-default mt-2'>Estimated {fulfillmentType} Time</h1>
+                        <h1 className='text-center text-2xl font-bold font-default mt-2'>{pickupTime}</h1>
+{/*                        <div className='flex justify-center'>
+                            <button onClick={handleChangePickupTime} className='text-white font-default bg-black p-2 px-8 rounded mt-2'>{fulfillmentType} at a later time
+                            </button>
+                        </div>*/}
+                        {!fulfillmentTimeToggle && renderPickupTimes()}
                     </div>
                 </div>
 
@@ -248,7 +302,7 @@ export default function Checkout() {
                             {cartItems.map(cartItem => {
                                 return (
                                     <ProductRow
-                                        key={cartItem.id}
+                                        key={cartItem.cartId}
                                         name={cartItem.name}
                                         price={cartItem.price}
                                         qty={cartItem.qty}

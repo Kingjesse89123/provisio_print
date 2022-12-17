@@ -29,7 +29,7 @@ export default function FloatingCart(props){
                         </thead> :
                         <p className='font-default text-center'>Your order is empty</p>}
                     {props.cartItems?.map(cartItem => {
-                        return <ProductRow key={cartItem.id}
+                        return <ProductRow key={cartItem.cartId}
                                            name={cartItem.name}
                                            price={cartItem.price}
                                            qty={cartItem.qty}

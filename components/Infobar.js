@@ -1,3 +1,4 @@
+
 export default function Infobar(props){
     return(
     <div id='infobar-container' className='m-12 flex justify-between'>
