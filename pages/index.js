@@ -20,7 +20,21 @@ export default function Index() {
 
     const info = useQuery(['info'], getInfo)
 
-    const queryIngredients = useQuery(['ingredients'], getIngredients)
+    const [ingredients, setIngredients] = useState()
+    const queryIngredients = useQuery(['ingredients'], getIngredients,{
+        onSuccess: (data) => {
+            setIngredients(data.data.map(ingredient=>{
+                return(
+                    {
+                        name: ingredient.name,
+                        id: ingredient.id,
+                        selection: 2,
+                        products: ingredient.products,
+                    }
+                )
+            }))
+        }
+    })
 
     // const img = useQuery(['img'], getImg)
 
@@ -75,28 +89,11 @@ export default function Index() {
         //Ingredient Choice represents state of the actual customer choice
         //Ingredient Choices represents state of what options are avaliable to the customer
     const ingredientChoices = ['None', 'Light', 'Normal', 'Extra']
-
-    const ingredients = queryIngredients.data?.data.map(ingredient=>{
-        return(
-            {
-                name: ingredient.name,
-                id: ingredient.id,
-                selection: 2,
-                products: ingredient.products,
-            }
-        )
-    })
-
-    console.log(ingredients)
-
         function handleSelectionChoice(e){
             setSelectionChoice(e.target.value)
         }
-
-        const [ingredientChoice, setIngredientChoice] = useState(ingredients)
-
     const handleIngredientDecrease = (id) => {
-        setIngredientChoice(prev => prev.map(item => {
+        setIngredients(prev => prev.map(item => {
             if(item.id === id){
                 return ({
                     ...item,
@@ -109,7 +106,7 @@ export default function Index() {
     }
 
     const handleIngredientIncrease = (id) => {
-        setIngredientChoice(prev => prev.map(item => {
+        setIngredients(prev => prev.map(item => {
             if(item.id === id){
                 return ({
                     ...item,
@@ -178,7 +175,7 @@ export default function Index() {
                                 name: modalProduct.name,
                                 price: modalProduct.price,
                                 qty: 1,
-                                ingredientChoice: ingredientChoice,
+                                ingredientChoice: ingredients,
                                 selectionChoice: selectionChoice,
                                 cartId: cartId(),
                             }
