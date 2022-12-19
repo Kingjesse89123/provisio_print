@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {getCategories, getProducts, getInfo, getImg} from './api/api'
+import {getCategories, getProducts, getInfo, getIngredients} from './api/api'
 import toast from "react-hot-toast";
 import {useQuery} from "react-query";
 import ReactModal from 'react-modal'
@@ -11,7 +11,6 @@ import Modal from "../components/Modal";
 import Infobar from "../components/Infobar";
 import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
-import {DateTime} from "luxon";
 
 export default function Index() {
 
@@ -20,6 +19,8 @@ export default function Index() {
     const products = useQuery(['products'], getProducts)
 
     const info = useQuery(['info'], getInfo)
+
+    const queryIngredients = useQuery(['ingredients'], getIngredients)
 
     // const img = useQuery(['img'], getImg)
 
@@ -67,9 +68,7 @@ export default function Index() {
         const [itemCount, setItemCount] = useState(cartItems?.length)
         const [menuView, setMenuView] = useState(false)
 
-        const {subtotal, setSubtotal, closingTime, setClosingTime} = useContext(CartContext)
-
-            setClosingTime(info.data?.data[0].closingtime)
+        const {subtotal, setSubtotal} = useContext(CartContext)
 
         const [selectionChoice, setSelectionChoice] = useState()
 
@@ -77,33 +76,18 @@ export default function Index() {
         //Ingredient Choices represents state of what options are avaliable to the customer
     const ingredientChoices = ['None', 'Light', 'Normal', 'Extra']
 
-    const ingredients = [
-        {
-            name: 'Tomato',
-            id: 1,
-            selection: 2,
-        },
-        {
-            name: 'Lettuce',
-            id: 2,
-            selection: 2,
-        },
-        {
-            name: 'Onion',
-            id: 3,
-            selection: 2,
-        },
-        {
-            name: 'Pickle',
-            id: 4,
-            selection: 2,
-        },
-        {
-            name: 'Thousand Island',
-            id: 5,
-            selection: 2,
-        }
-    ]
+    const ingredients = queryIngredients.data?.data.map(ingredient=>{
+        return(
+            {
+                name: ingredient.name,
+                id: ingredient.id,
+                selection: 2,
+                products: ingredient.products,
+            }
+        )
+    })
+
+    console.log(ingredients)
 
         function handleSelectionChoice(e){
             setSelectionChoice(e.target.value)
@@ -159,17 +143,18 @@ export default function Index() {
                 <div key={category.id}>
                     <Category
                     id={category.id}
-                    name={category.Name}
+                    name={category.name}
+                    key={category.id}
                     />
                     <div className='flex'>
                         {products.data?.data.map(product => {
                             return (
-                                product.Catagory === category.id ?
+                                product.category === category.id ?
                                     <Product
                                     id={product.id}
-                                    name={product.Name}
-                                    stock_status={product.Stock_Status}
-                                    desc={product.Description}
+                                    name={product.name}
+                                    stock_status={product.instock}
+                                    desc={product.description}
                                     price={product.price}
                                     category={category.id}
                                     handleModalOpen={handleModalOpen}
@@ -184,40 +169,13 @@ export default function Index() {
         return (
 
             <div className='w-full'>
-                <ReactModal isOpen={modalIsOpen}>
+                <ReactModal isOpen={modalIsOpen} shouldCloseOnEsc={true}>
                     {products.data?.data.map(modalProduct => {
                         function handleAddToCart(){
 
-                            let cartIds = []
-
-                            let cartQty = []
-
-                            for(let i=0; i<cartItems.length; i++){
-                                cartIds.push(cartItems[i].id)
-                            }
-
-                            let cartIds2 = []
-                            let count
-                            for(let i=0; i<cartIds.length; i++){
-                                if(cartIds2.indexOf(cartIds[i]) === -1){
-                                    cartIds2.push(cartIds[i])
-                                    cartQty.splice(i, 0, 1)
-                                    console.log('Unique!')
-                                    console.log(cartQty)
-                                } else {
-                                    count = cartQty[cartIds2.indexOf(cartIds[i])]
-                                    count++
-                                    console.log(count)
-                                    cartQty.splice(cartIds2.indexOf(cartIds[i]), 1, count)
-                                    console.log('Already exists')
-                                    console.log(cartQty)
-                                    console.log(cartIds2)
-                                }
-                            }
-
                             let currentItem = {
                                 id: modalProduct.id,
-                                name: modalProduct.Name,
+                                name: modalProduct.name,
                                 price: modalProduct.price,
                                 qty: 1,
                                 ingredientChoice: ingredientChoice,
@@ -238,15 +196,15 @@ export default function Index() {
                                 <Modal
                                 closeModal={handleModalClose}
                                 addToCart={handleAddToCart}
-                                name={modalProduct.Name}
+                                name={modalProduct.name}
                                 price={modalProduct.price}
                                 id={modalProduct.id}
-                                desc={modalProduct.Description}
+                                desc={modalProduct.description}
                                 handleSelectionChoice={handleSelectionChoice}
                                 selection={selectionChoice}
                                 handleIngredientDecrease={handleIngredientDecrease}
                                 handleIngredientIncrease={handleIngredientIncrease}
-                                ingredientSelectionState={ingredientChoice}
+                                ingredients={ingredients}
                                 ingredientChoices={ingredientChoices}
                                 /> : null
                         )
@@ -258,8 +216,8 @@ export default function Index() {
                     </div>
                 </center>
                 {!products.isLoading && <Infobar
-                    name={info.data?.data[0].Name}
-                    address={info.data?.data[0].Address}
+                    name={info.data?.data[0].name}
+                    address={info.data?.data[0].address}
                     phone={info.data?.data[0].phone_number}
                     pickupTime={pickupTime}
                     closingTime={info.data?.data[0].closingtime}

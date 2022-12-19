@@ -4,14 +4,11 @@ import Script from "next/script";
 import {CartContext} from "../components/CartContext";
 import ProductRow from "../components/ProductRow";
 import TipButton from "../components/TipButton";
-import Link from 'next'
 import FulfillmentButton from "../components/FulfillmentButton";
 import * as clearentapi from './api/clearentapi'
-import Axios from "axios";
 import PaymentFields from "../components/PaymentFields";
 import {sendOrder} from "./api/api";
 import {useRouter} from "next/router";
-import {DateTime} from "luxon";
 
 export default function Checkout() {
     function formatPhoneNumber(value) {
@@ -50,7 +47,7 @@ export default function Checkout() {
         zip: ''
     })
 
-    const {cartItems, setCartItems, subtotal, pickupTime, closingTime} = useContext(CartContext)
+    const {cartItems, setCartItems, subtotal, pickupTime} = useContext(CartContext)
 
     const [fulfillmentTimeToggle, setFulfillmentTimeToggle] = useState(false)
     const [tip, setTip] = useState(0.00)
@@ -80,7 +77,7 @@ export default function Checkout() {
         setTip(0)
     }
 
-    function renderPickupTimes(){
+/*    function renderPickupTimes(){
         console.log(pickupTime)
         console.log(closingTime)
         let pickup_i = DateTime.fromISO(pickupTime)
@@ -88,7 +85,7 @@ export default function Checkout() {
         let diff = closing_i.diff(pickup_i, 'minutes')
         let diffInMinutes = diff.values.minutes
         console.log(diffInMinutes%20)
-    }
+    }*/
 
     function handleChangePickupTime(){
         event.preventDefault()
@@ -118,6 +115,45 @@ export default function Checkout() {
     }
 
     function handleOrderPlaced(){
+        let cartIds = []
+
+        let cartQty = []
+
+        for(let i=0; i<cartItems.length; i++){
+            cartIds.push(cartItems[i].id)
+        }
+
+        let cartIds2 = []
+        let count
+        for(let i=0; i<cartIds.length; i++){
+            if(cartIds2.indexOf(cartIds[i]) === -1){
+                cartIds2.push(cartIds[i])
+                cartQty.splice(i, 0, 1)
+                console.log('Unique!')
+                console.log(cartQty)
+            } else {
+                count = cartQty[cartIds2.indexOf(cartIds[i])]
+                count++
+                console.log(count)
+                cartQty.splice(cartIds2.indexOf(cartIds[i]), 1, count)
+                console.log('Already exists')
+                console.log(cartQty)
+                console.log(cartIds2)
+            }
+        }
+
+        let products = []
+
+        for(let i=0; i<cartIds2.length; i++){
+            products.push(
+                {
+                    products_id: cartIds2[i],
+                    qty: cartQty[i]
+                }
+            )
+        }
+
+        console.log(products)
 
         ClearentSDK.getPaymentToken().then(
             (result) => {
@@ -143,7 +179,7 @@ export default function Checkout() {
                     .then(res=>setOrderStatus({
                         status: 'processing',
                         message: 'Transaction Approved! Submitting your order.'
-                    })+sendOrder(total_d, '0f905a6f-3c77-40c4-8eb4-0808106e6aa5')+setCartItems([])+router.push('/confirmed'))
+                    })+sendOrder(total_d, products)+setCartItems([])+router.push('/confirmed'))
                     .catch(error=>setOrderStatus(
                         {status: 'error', message: error?.response.data.payload.transaction['display-message']}
                     ))
@@ -230,7 +266,6 @@ export default function Checkout() {
                             <button onClick={handleChangePickupTime} className='text-white font-default bg-black p-2 px-8 rounded mt-2'>{fulfillmentType} at a later time
                             </button>
                         </div>*/}
-                        {!fulfillmentTimeToggle && renderPickupTimes()}
                     </div>
                 </div>
 

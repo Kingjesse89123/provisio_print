@@ -1,5 +1,5 @@
 //React Imports
-import {createContext, useContext, useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef} from "react";
 //
 import '../styles/globals.css'
 //React Query Imports
@@ -9,16 +9,15 @@ import {QueryClientProvider, QueryClient} from "react-query";
 import {Toaster} from "react-hot-toast";
 //Component Imports
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import {CartContext} from "../components/CartContext";
 
 import Freshchat from "../lib/freshchat";
-import Script from "next/script";
 //
 import { DateTime } from "luxon";
 
 
 function MyApp({ Component, pageProps }) {
+
 
     const queryClient = new QueryClient()
 
@@ -34,6 +33,7 @@ function MyApp({ Component, pageProps }) {
     const [pickupTime, setPickupTime] = useState(dt.hour+':'+dt.minute)
     const [closingTime, setClosingTime] = useState()
 
+    console.log(cartItems)
     useEffect(() => {
         if (JSON.parse(localStorage.getItem("cartItems"))) {
             const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));

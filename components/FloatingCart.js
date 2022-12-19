@@ -5,8 +5,8 @@ export default function FloatingCart(props){
     let subtotal_d = Number(props.subtotal.toFixed(2))
     return(
         <div id='floating-cart'
-             className={props.expanded ? 'inset-x-0 bottom-4 sticky w-2/3 bg-white p-4 shadow-2xl rounded-2xl h-1/2 m-auto mb-2 mt-2' :
-                 'inset-x-0 bottom-4 mb-2 mt-2 sticky w-2/3 bg-white p-4 shadow-2xl rounded-full h-1/2 m-auto'
+             className={props.expanded ? 'inset-x-0 bottom-4 sticky w-2/3 bg-white p-4 rounded-2xl h-1/2 m-auto shadow-2xl border-2' :
+                 'inset-x-0 bottom-4 mb-2 mt-2 sticky w-2/3 bg-white p-4 rounded-full h-1/2 m-auto shadow-2xl border-2'
              }>
             <div className='flex cursor-pointer' onClick={props.toggleCartExpand}>
                 <h1 className='font-default text-xl content-left p-2 flex-auto'>Current Order ({props.count})</h1>
