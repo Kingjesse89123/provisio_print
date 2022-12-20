@@ -13,7 +13,6 @@ import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
 
 export default function Index() {
-
     const categories = useQuery(['categories'], getCategories)
 
     const products = useQuery(['products'], getProducts)

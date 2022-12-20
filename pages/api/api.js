@@ -8,7 +8,7 @@ export const getProducts = () => api.get('items/products').then(res=>res.data)
 
 export const getCategories = () => api.get('items/categories').then(res=>res.data)
 
-export const getInfo= () => api.get('items/restaurants').then(res=>res.data)
+export const getInfo= () => api.get(`items/restaurants?filter[url][_eq]=${window.location.host}`).then(res=>res.data)
 
 export const sendOrder = (total, items) => api.post('items/orders', {
 products: items,
