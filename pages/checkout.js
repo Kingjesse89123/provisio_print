@@ -74,7 +74,10 @@ export default function Checkout() {
     }
 
     function handleRemoveTip(){
-        setTip(0)
+        setTip(prevState => {
+            return prevState - prevState
+        })
+        toast.error('Tip removed :(')
     }
 
 /*    function renderPickupTimes(){
@@ -161,19 +164,19 @@ export default function Checkout() {
                 clearentapi.sendJWT(result.payload['mobile-jwt'].jwt,
                     {
                     type: 'SALE',
-                    amount: total_d,
-                    "sales-tax-amount":tax_d,
+                    amount: subtotal_d,
+                    "sales-tax-amount": tax_d,
                     "sales-tax-type":"LOCAL_SALES_TAX",
                     "software-type":"Blueplate",
-                    "software-type-version":"Provisio",
+                    "software-type-version":"Provisio a1.4.0",
                     'service-fee': c_fee_d,
-                    'tip':tip_d,
-                    'email-receipt':contactInfo.email,
+                    'tip-amount': tip_d,
                     email: contactInfo.email,
+                    'email-receipt': "true",
                     'billing-is-shipping':'true',
-                    'billing':{
-                        'from-zip':contactInfo.zip
-                    },
+                        "billing": {
+                            "zip": contactInfo.zip,
+                        },
                     }
                 )
                     .then(res=>setOrderStatus({
@@ -212,9 +215,9 @@ export default function Checkout() {
 
     if(cartItems.length===0){
         return (<div className='font-default'>
-                <p className='text-xl text-center mt-6'>It looks like your order is empty. No worries!</p>
+                <p className='text-xl text-center mt-6 p-1'>It looks like your order is empty. No worries!</p>
                 <center>
-                    <div className='w-1/3'>
+                    <div className='w-2/3'>
                         <button onClick={() => (router.push('/'))} className='mt-6 border-2 border-blue-500 p-2 px-12 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white'>Start your order</button>
                     </div>
                 </center>
@@ -243,11 +246,18 @@ export default function Checkout() {
                     />
                     <p className='mt-2 text-xl font-default'>It would be much appreciated, and every bit counts.</p>
                 </div>}
+                {tip!==0 && <div className='font-default'>
+                    <center>
+                        <div className='w-2/3'>
+                            <button onClick={handleRemoveTip} className='mt-6 border-2 border-red-500 p-2 px-12 text-red-500 rounded-full hover:bg-red-500 hover:text-white'>Remove Tip</button>
+                        </div>
+                    </center>
+                </div>}
                     </div>
 
                 <div id='fulfillment-block'>
                     <h1 className='mt-16 text-3xl font-default font-light text-center'>Fulfillment</h1>
-                    <div className='flex justify-center'>
+                    <div className='flex-col justify-center'>
                             <FulfillmentButton
                             type='Pickup'
                             handleClick={handleChangeFulfillmentType}
@@ -269,9 +279,9 @@ export default function Checkout() {
                     </div>
                 </div>
 
-            <div id='contact-info-block' className='flex flex-col items-center gap-4'>
+            <div id='contact-info-block' className='flex flex-col items-center gap-2'>
                 <h1 className='mt-6 text-2xl font-default font-light'>Contact Information</h1>
-                <div className='flex gap-4 justify-between'>
+                <div className='flex-col gap-2 justify-between'>
                     <input className='rounded border-2 p-4 font-default' placeholder='First Name' required='true' onChange={(e) => {setContactInfo(prevState => {
                         return({
                             ...prevState,
@@ -285,7 +295,7 @@ export default function Checkout() {
                         })
                     })}}/>
                 </div>
-                <div className='flex gap-4 justify-between'>
+                <div className='flex-col gap-2 justify-between'>
                     <input className='rounded border-2 p-4 font-default' placeholder='Email' type='email' onChange={(e)=>{setContactInfo(prevState => {
                         return(
                             {
@@ -325,9 +335,9 @@ export default function Checkout() {
                     </form>
                 </div>
                 <div className='flex justify-center'>
-                    <div className='w-2/3 shadow-xl rounded-xl p-4'>
+                    <div className='w-11/12 shadow-xl rounded-xl p-4'>
                         <table id='cart-table'
-                               className='mt-6 font-default text-xl table-fixed w-full text-left'>
+                               className='mt-6 font-default table-fixed w-full text-left'>
                             <thead className='border-b-2 border-b-solid text-lg'>
                             <tr>
                                 <th>Item</th>
@@ -349,19 +359,19 @@ export default function Checkout() {
                             })}
                             <tfoot>
                             <tr>
-                                <td className='font-bold'>Subtotal</td>
+                                <td className='text-md font-bold'>Subtotal</td>
                                 <td>${subtotal_d}</td>
                             </tr>
                             <tr>
-                                <td className='font-bold'>Tax</td>
+                                <td className='text-md font-bold'>Tax</td>
                                 <td>${tax_d}</td>
                             </tr>
                             {tip !== 0 && <tr>
-                                <td className='font-bold'>Tip</td>
+                                <td className='text-md font-bold'>Tip</td>
                                 <td>${tip_d }</td>
                             </tr>}
                             <tr>
-                                <td className='font-bold'>Convenience Fee</td>
+                                <td className='text-md font-bold'>Convenience Fee</td>
                                 <td>${c_fee_d}</td>
                             </tr>
                             <tr>

@@ -1,5 +1,3 @@
-import {useContext} from "react";
-import {CartContext} from "./CartContext";
 import {MdCancel} from "react-icons/md";
 
 export default function ProductRow(props){
@@ -8,7 +6,10 @@ export default function ProductRow(props){
             <tr>
                 <td className='font-bold'>{props.name}</td>
                 <td>${props.price}</td>
-                <td><button onClick={()=>props.handleRemoveItem(props.cartId)} value={props.cartId}><MdCancel className='text-red-500 text-3xl'/></button></td>
+                {props.handleRemoveItem && <td>
+                    <button onClick={() => props.handleRemoveItem(props.cartId)} value={props.cartId}><MdCancel
+                        className='text-red-500 text-3xl'/></button>
+                </td>}
             </tr>
             <tr>
                 {props.selectionChoice && <tr><td>-{props.selectionChoice}</td></tr>}

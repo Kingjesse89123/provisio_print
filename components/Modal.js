@@ -25,10 +25,11 @@ export default function Modal(props) {
     return (
         <div>
             <div id='top-row' className='flex justify-between mb-6'>
-                <h1 className='text-4xl font-bold font-default'>{props.name}</h1>
-                <button onClick={props.closeModal} className='text-4xl'><MdCancel className='text-red-500'/></button>
+                <h1 className='text-2xl font-bold font-default'>{props.name}</h1>
+                <button onClick={props.closeModal} className='text-2xl'><MdCancel className='text-red-500'/></button>
             </div>
-            <div id='center-block' className='flex justify-start gap-4'><img className='h-80 w-1/3 object-cover rounded' alt='Food Image'/>
+            <div id='center-block' className='flex-col justify-start gap-4'>
+                <img className='w-full object-cover rounded' alt='Food Image'/>
                 <div id='variations-block' className='font-default'>
                     <SelectionSelector title='Cheese Choice' handleSelectionChoice={props.handleSelectionChoice} selection={props.selection}/>
                     <h1 className='text-2xl font-bold mt-2'>Ingredients</h1>

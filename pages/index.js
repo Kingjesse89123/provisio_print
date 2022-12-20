@@ -143,7 +143,7 @@ export default function Index() {
                     name={category.name}
                     key={category.id}
                     />
-                    <div className='flex'>
+                    <div className='flex flex-col md:flex-row'>
                         {products.data?.data.map(product => {
                             return (
                                 product.category === category.id ?

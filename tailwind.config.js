@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+let primarycolor = '#0072ce'
+let accentcolor = '#228B22'
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -10,7 +13,8 @@ module.exports = {
         'default': ['Red Hat Display', 'sans-serif']
       },
       colors:{
-        'bpb':'#0072ce'
+        'bpb':primarycolor,
+        'accent':accentcolor,
       }
     },
   },
