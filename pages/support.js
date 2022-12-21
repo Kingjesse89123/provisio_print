@@ -4,17 +4,16 @@ export default function Support(){
     return(
         <div>
             <h1 className='text-center m-12 text-4xl font-default'>Support and Feedback Center</h1>
-            <div className='flex justify-around text-left font-default'>
-                <div className='shadow-xl border-2 border-solid p-8 rounded-xl'>
+            <div className='flex justify-around text-left font-default gap-2 m-2'>
+                <div className='shadow-xl border-2 border-solid p-8 rounded-xl flex-1'>
                     <h1 className='text-2xl'>Text</h1>
                     <h1 className='text-4xl font-bold'>805.800.8050</h1>
-
                 </div>
-                <div className='shadow-xl border-2 border-solid p-6 rounded-xl'>
+                <div className='shadow-xl border-2 border-solid p-6 rounded-xl flex-1'>
                     <h1 className='text-2xl'>Email</h1>
                     <h1 className='text-4xl font-bold'>support@blueplate.ai</h1>
                 </div>
-                <div className='shadow-xl border-2 border-solid p-6 rounded-xl'>
+                <div className='shadow-xl border-2 border-solid p-6 rounded-xl flex-1'>
                     <h1 className='text-2xl'>Livechat</h1>
                     <h1 className='text-4xl font-bold'>Click here</h1>
                     <p>(no work)</p>

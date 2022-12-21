@@ -14,7 +14,7 @@ import {CartContext} from "../components/CartContext";
 
 export default function Index() {
     const info = useQuery(['info'], getInfo)
-    const categories = useQuery(['categories'], getCategories)
+    const categories = useQuery(['categories'], ()=>getCategories(info.data.data[0].id), {enabled: info.isSuccess})
     const products = useQuery(['products'], ()=>getProducts(info.data.data[0].id), {enabled: info.isSuccess})
 
     const [ingredients, setIngredients] = useState()
@@ -140,7 +140,7 @@ export default function Index() {
                     name={category.name}
                     key={category.id}
                     />
-                    <div className='flex flex-col md:flex-row'>
+                    <div className='flex flex-col md:flex-row flex-wrap'>
                         {products.data?.data.map(product => {
                             return (
                                 product.category === category.id ?
