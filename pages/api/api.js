@@ -4,7 +4,7 @@ const api = Axios.create({
     baseURL: 'https://5nn73jb7.directus.app/',
 });
 
-export const getProducts = () => api.get('items/products').then(res=>res.data)
+export const getProducts = (res_id) => api.get(`items/products?filter[restaurant][_eq]=${res_id}`).then(res=>res.data)
 
 export const getCategories = () => api.get('items/categories').then(res=>res.data)
 

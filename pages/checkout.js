@@ -211,6 +211,8 @@ export default function Checkout() {
 
     useEffect(()=> initClearentSDK(), []);
 
+    let ingredientChoices = ['None','Light','Normal','Extra']
+
     if(cartItems.length===0){
         return (<div className='font-default'>
                 <p className='text-xl text-center mt-6 p-1'>It looks like your order is empty. No worries!</p>
@@ -344,15 +346,14 @@ export default function Checkout() {
                             </thead>
                             {cartItems.map(cartItem => {
                                 return (
-                                    <ProductRow
-                                        key={cartItem.cartId}
-                                        name={cartItem.name}
-                                        price={cartItem.price}
-                                        qty={cartItem.qty}
-                                        cartId={cartItem.cartId}
-                                        selectionChoice={cartItem.selectionChoice}
-                                        ingredientChoice={cartItem.ingredientChoice}
-                                    />
+                                    <ProductRow key={cartItem.cartId}
+                                                name={cartItem.name}
+                                                price={cartItem.price}
+                                                qty={cartItem.qty}
+                                                cartId={cartItem.cartId}
+                                                selectionChoice={cartItem.selectionChoice}
+                                                ingredientChoice={cartItem.ingredientChoice}
+                                                ingredientChoices={ingredientChoices}/>
                                 )
                             })}
                             <tfoot>
