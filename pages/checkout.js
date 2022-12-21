@@ -156,8 +156,6 @@ export default function Checkout() {
             )
         }
 
-        console.log(products)
-
         ClearentSDK.getPaymentToken().then(
             (result) => {
                 // this function is called if getting a payment token was successful
@@ -171,7 +169,7 @@ export default function Checkout() {
                     "software-type-version":"Provisio a1.4.0",
                     'service-fee': c_fee_d,
                     'tip-amount': tip_d,
-                    email: contactInfo.email,
+                    'email-address': contactInfo.email,
                     'email-receipt': "true",
                     'billing-is-shipping':'true',
                         "billing": {

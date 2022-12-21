@@ -13,11 +13,9 @@ import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
 
 export default function Index() {
-    const categories = useQuery(['categories'], getCategories)
-
-    const products = useQuery(['products'], getProducts)
-
     const info = useQuery(['info'], getInfo)
+    const categories = useQuery(['categories'], getCategories)
+    const products = useQuery(['products'], ()=>getProducts(info.data.data[0].id), {enabled: info.isSuccess})
 
     const [ingredients, setIngredients] = useState()
     const queryIngredients = useQuery(['ingredients'], getIngredients,{
@@ -231,7 +229,8 @@ export default function Index() {
                     </button>
                 </div>}
 
-                {categories.isLoading ? <Spinner/> : productBlocks}
+                {products.isLoading ? <Spinner/> : productBlocks}
+                {products.isError ? <h1>There seems to have been an error loading the products. This is typically because of a misconfiguration in the domain settings.</h1> : null}
 
                 {products.isLoading === false && <FloatingCart
                 toggleCartExpand={toggleCartExpand}
