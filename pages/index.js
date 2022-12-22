@@ -218,7 +218,7 @@ export default function Index() {
                 </center>
                 {!products.isLoading && <Infobar
                     name={info.data?.data[0].name}
-                    address={info.data?.data[0].address}
+                    address={info.data?.data[0].address_line_1}
                     phone={info.data?.data[0].phone_number}
                     pickupTime={pickupTime}
                     closingTime={info.data?.data[0].closingtime}
