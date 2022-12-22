@@ -10,12 +10,10 @@ export const getCategories = (res_id) => api.get(`items/categories?filter[restau
 
 export const getInfo= () => api.get(`items/restaurants?filter[url][_eq]=${window.location.host}`).then(res=>res.data)
 
-export const sendOrder = (total, items) => api.post('items/orders', {
-products: items,
-}).then(res=>console.log(res))
+export const sendOrder = (data) => api.post('items/orders', data).then(res=>console.log(res))
 
 export const getIngredients = () => api.get('items/ingredients?fields=*.*').then(res=>res.data)
 
 export const getSelections = () => api.get('items/selections?fields=*.*')
 
-// export const getImg= () => api.get('assets/').then(res=>res.data)
+export const getImg= () => api.get('assets/').then(res=>res.data)

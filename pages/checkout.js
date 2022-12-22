@@ -180,7 +180,20 @@ export default function Checkout() {
                     .then(res=>setOrderStatus({
                         status: 'processing',
                         message: 'Transaction Approved! Submitting your order.'
-                    })+sendOrder(total_d, products)+setCartItems([])+router.push('/confirmed'))
+                    })+sendOrder({
+                        products: products,
+                        tip: tip_d,
+                        customer:{
+                            fname: contactInfo.f_name,
+                            lname: contactInfo.l_name,
+                            email: contactInfo.email,
+                            zip_code: contactInfo.zip
+                        },
+                        conv_fee: c_fee_d,
+                        tax: tax_d,
+                        subtotal: subtotal_d,
+                        total: total_d,
+                    })+setCartItems([])+router.push('/confirmed'))
                     .catch(error=>setOrderStatus(
                         {status: 'error', message: error?.response.data.payload.transaction['display-message']}
                     ))

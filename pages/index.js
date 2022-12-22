@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {getCategories, getProducts, getInfo, getIngredients} from './api/api'
+import {getCategories, getProducts, getInfo, getIngredients, getImg} from './api/api'
 import toast from "react-hot-toast";
 import {useQuery} from "react-query";
 import ReactModal from 'react-modal'
@@ -11,6 +11,7 @@ import Modal from "../components/Modal";
 import Infobar from "../components/Infobar";
 import FloatingCart from "../components/FloatingCart";
 import {CartContext} from "../components/CartContext";
+import Image from "next/image";
 
 export default function Index() {
     const info = useQuery(['info'], getInfo)
@@ -139,6 +140,8 @@ export default function Index() {
                     id={category.id}
                     name={category.name}
                     key={category.id}
+                    primaryColor={info.data?.data[0].primarycolor}
+                    headerFont={info.data?.data[0].headerfont}
                     />
                     <div className='flex flex-col md:flex-row flex-wrap'>
                         {products.data?.data.map(product => {
@@ -152,6 +155,8 @@ export default function Index() {
                                     price={product.price}
                                     category={category.id}
                                     handleModalOpen={handleModalOpen}
+                                    headerFont={info.data?.data[0].headerfont}
+                                    bodyFont={info.data?.data[0].bodyfont}
                                     /> : null
                             )
                         })}
@@ -200,6 +205,8 @@ export default function Index() {
                                 handleIngredientIncrease={handleIngredientIncrease}
                                 ingredients={ingredients}
                                 ingredientChoices={ingredientChoices}
+                                headerFont={info.data?.data[0].headerfont}
+                                bodyFont={info.data?.data[0].bodyfont}
                                 /> : null
                         )
                     })}
@@ -215,6 +222,8 @@ export default function Index() {
                     phone={info.data?.data[0].phone_number}
                     pickupTime={pickupTime}
                     closingTime={info.data?.data[0].closingtime}
+                    headerFont={info.data?.data[0].headerfont}
+                    bodyFont={info.data?.data[0].bodyfont}
                 />}
 
                 {!products.isLoading && <div id='menu-view-selection'
@@ -240,6 +249,9 @@ export default function Index() {
                 subtotal={subtotal}
                 count={itemCount}
                 ingredientChoices={ingredientChoices}
+                primaryColor={info.data?.data[0].primarycolor}
+                headerFont={info.data?.data[0].headerfont}
+                bodyFont={info.data?.data[0].bodyfont}
                 />}
 
             </div>

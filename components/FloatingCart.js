@@ -9,16 +9,16 @@ export default function FloatingCart(props){
                  'inset-x-0 bottom-4 mb-2 mt-2 sticky w-2/3 bg-white p-4 rounded-full h-1/2 m-auto shadow-2xl border-2 w-11/12 md:w-2/3'
              }>
             <div className='flex cursor-pointer' onClick={props.toggleCartExpand}>
-                <h1 className='font-default text-md md:text-2xl content-left p-2 flex-auto'>Current Order ({props.count})</h1>
+                <h1 className='text-md md:text-2xl content-left p-2 flex-auto' style={{fontFamily: props.bodyFont}}>Current Order ({props.count})</h1>
                 <Link href='/checkout'>
                     <button
-                        className='ml-auto font-default max-h-12 bg-bpb text-white px-4 md:px-8 text-md rounded-full hover:bg-blue-900'>
+                        className='ml-auto max-h-12 text-white px-4 md:px-8 text-md rounded-full hover:bg-black' style={{backgroundColor: props.primaryColor, fontFamily: props.headerFont}}>
                         Checkout
                     </button>
                 </Link>
             </div>
             <div>
-                {props.expanded ? <table className='w-full text-left font-default'>
+                {props.expanded ? <table className='w-full text-left' style={{fontFamily: props.bodyFont}}>
                     {props.cartItems?.length > 0 ?
                         <thead>
                         <tr className='border-b-2 border-b-solid text-lg'>
@@ -42,8 +42,8 @@ export default function FloatingCart(props){
 
                 </table> : null}
 
-                    {props.expanded && <div className='flex justify-end mx-4 mt-2 font-default font-bold'>
-                        {props.subtotal > 0 && <h1 className='text-xl'>Subtotal ${subtotal_d}</h1>}
+                    {props.expanded && <div className='flex justify-end mx-4 mt-2 font-bold'>
+                        {props.subtotal > 0 && <h1 className='text-xl' style={{fontFamily: props.bodyFont}}>Subtotal ${subtotal_d}</h1>}
                     </div>}
             </div>
         </div>
