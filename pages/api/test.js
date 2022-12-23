@@ -3,18 +3,26 @@ import {useState} from "react";
 export default function handler(req, res) {
 
     if (req.method === 'GET') {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/vnd.star.starprnt");
         console.log("alex is a stupid ...")
         const requestOptions = {
             method: 'GET',
+            redirect: 'follow'
+        };
+        const requestOptions2 = {
+            method: 'GET',
+            headers: myHeaders,
+            body: raw,
             redirect: 'follow'
         };
 
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
             .then(response => response.json())
             .then((result)=>{
-                fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions)
+                fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions2)
                     .then(response => response.json())
-                    .then(result => res.status(200).json(result)+res.setHeader('Content-Type', 'application/vnd.star.starprnt'))
+                    .then(result => res.status(200).json(result))
                     .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
