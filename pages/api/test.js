@@ -3,6 +3,7 @@ import {useState} from "react";
 export default function handler(req, res) {
 
     if (req.method === 'GET') {
+        console.log("alex is a stupid ...")
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -14,7 +15,7 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'POST'){
-        console.log(req)
+        console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
