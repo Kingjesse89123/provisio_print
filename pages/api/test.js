@@ -11,7 +11,12 @@ export default function handler(req, res) {
 
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
             .then(response => response.json())
-            .then(result => res.status(200).json(result.data.print_job))
+            .then((result)=>{
+                fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions)
+                    .then(response => response.json())
+                    .then(result => res.status(200).json(result))
+                    .catch(error => console.log('error', error));
+            })
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'POST'){
