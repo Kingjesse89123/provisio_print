@@ -54,7 +54,7 @@ export default function handler(req, res) {
 
         fetch("https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667", requestOptions)
             .then(response => response.text())
-            .then(result => console.log("deleted"))
+            .then(result => res.status(200))
             .catch(error => console.log('error', error));
     }
 
