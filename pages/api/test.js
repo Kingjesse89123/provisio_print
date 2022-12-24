@@ -13,8 +13,8 @@ export default function handler(req, res) {
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
             .then(response => response.json())
             .then((result)=>{
-                fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions)
-                    .then(response2 => response2.text())
+                fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}?download`, requestOptions)
+                    .then(response2 => response2)
                     .then(result2 => console.log(result2))
                     .catch(error => console.log('error', error));
             })
