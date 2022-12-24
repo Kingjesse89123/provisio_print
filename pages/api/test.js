@@ -4,7 +4,7 @@ export default function handler(req, res) {
 
     if (req.method === 'GET') {
 
-        console.log("alex is a stupid ...")
+        console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -37,6 +37,7 @@ export default function handler(req, res) {
             }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
+        console.log(req.body)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
