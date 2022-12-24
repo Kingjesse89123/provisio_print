@@ -14,9 +14,8 @@ export default function handler(req, res) {
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions)
-                    .then(response2 => response2.blob())
-                    .then(result2 => res.status(200).json(result2))
-                    .then (console.log(res))
+                    .then(response2 => response2.file())
+                    .then(result2 => res.status(200).json(result2)+console.log(result2))
                     .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
