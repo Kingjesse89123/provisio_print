@@ -9,7 +9,7 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        
+
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
@@ -17,7 +17,7 @@ export default function handler(req, res) {
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data.print_job}`, requestOptions)
                     .then(response2 => response2.text())
-                    .then(result2 => res.status(200).json(result2))
+                    .then(result2 => console.log(result2))
                     .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
@@ -53,7 +53,7 @@ export default function handler(req, res) {
 
         fetch("https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667", requestOptions)
             .then(response => response.text())
-            .then(result => console.log(result))
+            .then(result => console.log("deleted"))
             .catch(error => console.log('error', error));
     }
 
