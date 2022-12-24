@@ -37,7 +37,7 @@ export default function handler(req, res) {
             }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
-        console.log(req.body)
+        console.log(req)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
