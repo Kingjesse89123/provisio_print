@@ -3,8 +3,6 @@ import {useState} from "react";
 export default function handler(req, res) {
 
     if (req.method === 'GET') {
-
-        console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -37,7 +35,6 @@ export default function handler(req, res) {
             }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
-        console.log(req)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -54,7 +51,7 @@ export default function handler(req, res) {
 
         fetch("https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667", requestOptions)
             .then(response => response.text())
-            .then(result => res.status(200))
+            .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
     }
 
