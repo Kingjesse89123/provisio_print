@@ -32,7 +32,7 @@ export default function handler(req, res) {
             .then(result => result.data[0].printer_queue[0] ? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
-            }) : res.status(200).json('Printer queue empty')+ console.log('it stopped here'))
+            })+console.log("postsuceed") : res.status(200).json('Printer queue empty')+ console.log('it stopped here'))
             .catch(error => console.log('error', error));
         console.log('post done')
     } else if(req.method === 'DELETE'){
