@@ -12,7 +12,7 @@ export default function handler(req, res) {
         fetch("https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667&fields=*.*", requestOptions)
             .then(response => response.json())
             .then((result)=>{
-                fetch(`https://5nn73jb7.directus.app/assets/${result.data.printer_queue.print_job}`, requestOptions)
+                fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
                     .then((response2)=> response2.text() )
                     .then(result2 => res.status(200).send(result2))
                     .catch(error => console.log('error', error));
