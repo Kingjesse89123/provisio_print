@@ -7,9 +7,9 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-
+        console.log('pog')
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
-        console.log('saw')
+
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
             .then(response => response.json())
             .then((result)=>{
@@ -34,6 +34,7 @@ export default function handler(req, res) {
                 mediaTypes: ["text/plain"]
             }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
+        console.log('post done')
     } else if(req.method === 'DELETE'){
         console.log("deleted")
         const myHeaders = new Headers();
