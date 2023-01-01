@@ -9,7 +9,7 @@ export default function handler(req, res) {
         };
 
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
-
+        console.log('saw')
         fetch("https://5nn73jb7.directus.app/items/print_jobs/5bbae1b7-68db-439b-ab53-fa0f593d6034", requestOptions)
             .then(response => response.json())
             .then((result)=>{
