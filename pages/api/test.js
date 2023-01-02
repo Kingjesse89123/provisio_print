@@ -1,7 +1,7 @@
 import {useState} from "react";
-
+import {info} from "../index";
 export default function handler(req, res) {
-
+    let id = info.data.data[0].id
     if (req.method === 'GET') {
         const requestOptions = {
             method: 'GET',
@@ -9,7 +9,7 @@ export default function handler(req, res) {
         };
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
-        fetch("https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667&fields=*.*", requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=${id}&fields=*.*`, requestOptions)
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
@@ -26,16 +26,14 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch("https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667", requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=${id}`, requestOptions)
             .then(response => response.json())
             .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
             }): res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
-        console.log('post done')
     } else if(req.method === 'DELETE'){
-        console.log("deleted")
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
