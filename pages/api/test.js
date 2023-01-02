@@ -1,9 +1,9 @@
 import {useState} from "react";
 import {useQuery} from "react-query";
 import {getInfo} from "./api";
-const info = useQuery(['info'], getInfo)
-export default function handler(req, res) {
 
+export default function handler(req, res) {
+    const info = useQuery(['info'], getInfo)
     let id = info.data.data[0].id
     console.log(id)
     if (req.method === 'GET') {
