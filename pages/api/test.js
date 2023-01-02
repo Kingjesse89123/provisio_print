@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {info} from "../index";
 import {useQuery} from "react-query";
 import {getInfo} from "./api";
 const info = useQuery(['info'], getInfo)
