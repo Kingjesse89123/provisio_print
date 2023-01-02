@@ -48,7 +48,7 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch("https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667", requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants/${id}`, requestOptions)
             .then(response => response.text())
             .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
