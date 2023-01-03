@@ -7,13 +7,14 @@ export default function handler(req, res) {
         console.log("im doing the posting")
         prntmac = req.body.printerMAC
         console.log(prntmac)
+        console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${prntmac}`, requestOptions)
-            .then(response => response.json()+console.log(response))
+            .then(response => response.json()+console.log(response.json))
             .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
@@ -23,6 +24,7 @@ export default function handler(req, res) {
     else if(req.method ===  'GET'){
         console.log("im trying to do the getting")
         console.log(prntmac)
+        console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -41,6 +43,7 @@ export default function handler(req, res) {
     } else if(req.method === 'DELETE'){
         console.log("sorry charlie ur getting deleeted.... hopefully...")
         console.log(prntmac)
+        console.log(req.body)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
