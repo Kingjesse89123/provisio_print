@@ -1,37 +1,16 @@
 import {useState} from "react";
 import {useQuery} from "react-query";
 
-let prntmac
-export default function handler(req, res) {
-    if (req.method === 'POST') {
-        console.log("im doing the posting")
-        prntmac = req.body.printerMAC
-        console.log(prntmac)
-        console.log(req.body)
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
-            .then(response => response.json())
-            .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
-                jobReady: true,
-                mediaTypes: ["text/plain"]
-            }): res.status(200).json('Printer queue empty'))
-            .catch(error => console.log('error', error));
-    }
-    else if(req.method ===  'GET'){
-        console.log("im trying to do the getting")
-        console.log(prntmac)
-        console.log(req.body)
+export default function handler(req, res) {
+    if (req.method === 'GET') {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18&fields=*.*`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667&fields=*.*`, requestOptions)
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
@@ -40,10 +19,22 @@ export default function handler(req, res) {
                     .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
-    } else if(req.method === 'DELETE'){
-        console.log("sorry charlie ur getting deleeted.... hopefully...")
-        console.log(prntmac)
+    }
+    else if(req.method ===  'POST'){
         console.log(req.body)
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667`, requestOptions)
+            .then(response => response.json())
+            .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
+                jobReady: true,
+                mediaTypes: ["text/plain"]
+            }): res.status(200).json('Printer queue empty'))
+            .catch(error => console.log('error', error));
+    } else if(req.method === 'DELETE'){
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -58,7 +49,7 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667`, requestOptions)
             .then(response => response.text())
             .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
