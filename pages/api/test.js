@@ -1,11 +1,11 @@
 import {useState} from "react";
 import {useQuery} from "react-query";
 
-
+let prntmac
 export default function handler(req, res) {
     if (req.method === 'POST') {
         console.log("im doing the posting")
-        let prntmac = req.body.printerMAC
+        prntmac = req.body.printerMAC
         console.log(prntmac)
         const requestOptions = {
             method: 'GET',
