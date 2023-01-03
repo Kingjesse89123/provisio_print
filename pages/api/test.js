@@ -29,7 +29,7 @@ export default function handler(req, res) {
 
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[id][_eq]=2860d46e-efd4-49bc-861f-462bfc8ec667`, requestOptions)
             .then(response => response.json())
-            .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
+            .then(result => result.data[0].printer_queue[0]? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
             }): res.status(200).json('Printer queue empty'))
