@@ -4,7 +4,9 @@ import {useQuery} from "react-query";
 
 export default function handler(req, res) {
     if (req.method === 'POST') {
+        console.log("im doing the posting")
         let prntmac = req.body.printerMAC
+        console.log(prntmac)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -19,6 +21,8 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'GET'){
+        console.log("im trying to do the getting")
+        console.log(prntmac)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -35,6 +39,8 @@ export default function handler(req, res) {
             })
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
+        console.log("sorry charlie ur getting deleeted.... hopefully...")
+        console.log(prntmac)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
