@@ -21,7 +21,7 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'POST'){
-        let prntmac = req.body.printerMAC
+        var prntmac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
