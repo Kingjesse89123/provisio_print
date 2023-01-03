@@ -4,6 +4,7 @@ import {useQuery} from "react-query";
 
 export default function handler(req, res) {
     if (req.method === 'GET') {
+        console.log('getting')
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
@@ -22,6 +23,7 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'POST'){
+        console.log('posting')
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
@@ -36,6 +38,7 @@ export default function handler(req, res) {
             }): res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
+        console.log('deleting')
         console.log(req.body)
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
