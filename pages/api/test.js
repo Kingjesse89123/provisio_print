@@ -3,7 +3,22 @@ import {useQuery} from "react-query";
 
 
 export default function handler(req, res) {
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
+        let prntmac = req.body.printerMAC
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${prntmac}`, requestOptions)
+            .then(response => response.json())
+            .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
+                jobReady: true,
+                mediaTypes: ["text/plain"]
+            }): res.status(200).json('Printer queue empty'))
+            .catch(error => console.log('error', error));
+    }
+    else if(req.method ===  'GET'){
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -18,21 +33,6 @@ export default function handler(req, res) {
                     .then(result2 => res.status(200).send(result2))
                     .catch(error => console.log('error', error));
             })
-            .catch(error => console.log('error', error));
-    }
-    else if(req.method ===  'POST'){
-        var prntmac = req.body.printerMAC
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${prntmac}`, requestOptions)
-            .then(response => response.json())
-            .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
-                jobReady: true,
-                mediaTypes: ["text/plain"]
-            }): res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     } else if(req.method === 'DELETE'){
         const myHeaders = new Headers();
