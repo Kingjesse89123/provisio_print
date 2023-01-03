@@ -13,7 +13,7 @@ export default function handler(req, res) {
         };
 
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${prntmac}`, requestOptions)
-            .then(response => response.json())
+            .then(response => response.json()+console.log(response))
             .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
