@@ -31,7 +31,7 @@ export default function handler(req, res) {
         };
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=00:11:62:2f:fb:18&fields=*.*`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18&fields=*.*`, requestOptions)
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
@@ -58,7 +58,7 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=00:11:62:2f:fb:18`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
             .then(response => response.text())
             .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
