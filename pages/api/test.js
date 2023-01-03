@@ -10,7 +10,7 @@ export default function handler(req, res) {
         };
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=${window.location.host}&fields=*.*`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=${prntmac}&fields=*.*`, requestOptions)
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
@@ -21,13 +21,13 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
     else if(req.method ===  'POST'){
-        console.log(req.body)
+        let prntmac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=${window.location.host}`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${prntmac}`, requestOptions)
             .then(response => response.json())
             .then(result => result.data[0].printer_queue[0] && req.body.status === '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false? res.status(200).json({
                 jobReady: true,
@@ -49,7 +49,7 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=${window.location.host}`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[url][_eq]=${prntmac}`, requestOptions)
             .then(response => response.text())
             .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
