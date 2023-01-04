@@ -5,7 +5,7 @@ import {useQuery} from "react-query";
 export default function handler(req, res) {
 
     if (req.method === 'GET') {
-        var hi = 'imshittingonatoilet'
+        console.log(hi)
         console.log('getting')
         console.log(req.body)
         const requestOptions = {
@@ -26,7 +26,7 @@ export default function handler(req, res) {
     }
     else if(req.method ===  'POST'){
         console.log('posting')
-        console.log(hi)
+        var hi = 'supmyfellas'
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
