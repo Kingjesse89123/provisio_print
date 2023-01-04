@@ -3,7 +3,9 @@ import {useQuery} from "react-query";
 
 
 export default function handler(req, res) {
+
     if (req.method === 'GET') {
+        var hi = 'imshittingonatoilet'
         console.log('getting')
         console.log(req.body)
         const requestOptions = {
@@ -24,6 +26,7 @@ export default function handler(req, res) {
     }
     else if(req.method ===  'POST'){
         console.log('posting')
+        console.log(hi)
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
@@ -54,7 +57,7 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants/2860d46e-efd4-49bc-861f-462bfc8ec667`, requestOptions)
             .then(response => response.text())
             .then(result => res.status(200).json("Print Job Done"))
             .catch(error => console.log('error', error));
