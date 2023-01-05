@@ -1,9 +1,9 @@
 
-
+var hi
 export default function handler(req, res) {
     if(req.method ===  'POST') {
         console.log('posting')
-        var hi = 'supmyfellas'
+        hi = 'supmyfellas'
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
