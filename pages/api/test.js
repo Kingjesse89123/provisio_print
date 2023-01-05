@@ -3,6 +3,7 @@ var mac
 export default function handler(req, res) {
     if(req.method ===  'POST') {
         console.log("posting")
+        console.log(req.body)
         mac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
