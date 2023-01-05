@@ -56,7 +56,7 @@ export default function handler(req, res) {
                 .then((result)=>{
                     fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
                         .then((response2)=> response2.text() )
-                        .then(result2 => res.status(200).send("Print Job Done"))
+                        .then(result2 => res.status(200).send("Print Job Done")+console.log(result.data[0].id))
                         .catch(error => console.log('error', error));
                 })
                 .catch(error => console.log('error', error));
