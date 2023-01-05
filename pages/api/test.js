@@ -1,5 +1,3 @@
-import {useState} from "react";
-import {useQuery} from "react-query";
 
 
 export default function handler(req, res) {
@@ -20,7 +18,7 @@ export default function handler(req, res) {
             }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
     }
-    else if (req.method === 'GET') {
+        if (req.method === 'GET') {
         console.log(hi)
         console.log('getting')
         console.log(req.body)
@@ -40,7 +38,7 @@ export default function handler(req, res) {
             })
             .catch(error => console.log('error', error));
     }
-     else if(req.method === 'DELETE'){
+        if(req.method === 'DELETE'){
         console.log('deleting')
         console.log(req.body)
         const myHeaders = new Headers();
