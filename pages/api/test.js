@@ -3,14 +3,14 @@ var hi
 export default function handler(req, res) {
     if(req.method ===  'POST') {
         console.log('posting')
-        hi = 'supmyfellas'
+        hi = req.body.printerMAC
         console.log(req.body)
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${hi}`, requestOptions)
             .then(response => response.json())
             .then(result => result.data[0].printer_queue[0] ? res.status(200).json({
                 jobReady: true,
@@ -28,7 +28,7 @@ export default function handler(req, res) {
         };
         res.setHeader("Content-Type", "application/vnd.star.starprnt")
 
-        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18&fields=*.*`, requestOptions)
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${hi}&fields=*.*`, requestOptions)
             .then(response => response.json())
             .then((result)=>{
                 fetch(`https://5nn73jb7.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
