@@ -54,7 +54,7 @@ export default function handler(req, res) {
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
                 .then(response => response.json())
                 .then((result)=>{
-                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data.id}`, requestOptions)
+                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
                         .then((response2)=> response2.text() )
                         .then(result2 => res.status(200).send("Print Job Done"))
                         .catch(error => console.log('error', error));
