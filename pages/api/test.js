@@ -3,7 +3,7 @@ import {useQuery} from "react-query";
 
 
 export default function handler(req, res) {
-    if(req.method ===  'POST'){
+    if(req.method ===  'POST') {
         console.log('posting')
         var hi = 'supmyfellas'
         console.log(req.body)
@@ -14,11 +14,12 @@ export default function handler(req, res) {
 
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=00:11:62:2f:fb:18`, requestOptions)
             .then(response => response.json())
-            .then(result => result.data[0].printer_queue[0]? res.status(200).json({
+            .then(result => result.data[0].printer_queue[0] ? res.status(200).json({
                 jobReady: true,
                 mediaTypes: ["text/plain"]
-            }): res.status(200).json('Printer queue empty'))
+            }) : res.status(200).json('Printer queue empty'))
             .catch(error => console.log('error', error));
+    }
     else if (req.method === 'GET') {
         console.log(hi)
         console.log('getting')
@@ -39,7 +40,7 @@ export default function handler(req, res) {
             })
             .catch(error => console.log('error', error));
     }
-    } else if(req.method === 'DELETE'){
+     else if(req.method === 'DELETE'){
         console.log('deleting')
         console.log(req.body)
         const myHeaders = new Headers();
