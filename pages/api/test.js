@@ -2,6 +2,7 @@
 var mac
 export default function handler(req, res) {
     if(req.method ===  'POST') {
+        console.log("posting")
         mac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
@@ -18,6 +19,7 @@ export default function handler(req, res) {
         }
     }
         if (req.method === 'GET') {
+            console.log("getting")
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -35,6 +37,7 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
         if(req.method === 'DELETE'){
+            console.log("deleting")
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
