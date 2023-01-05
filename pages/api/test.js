@@ -17,6 +17,9 @@ export default function handler(req, res) {
                 }) : res.status(200).json('Printer queue empty'))
                 .catch(error => console.log('error', error));
         }
+        else{
+            res.status(200).json('Printer queue empty')
+        }
     }
         if (req.method === 'GET') {
             console.log("getting")
