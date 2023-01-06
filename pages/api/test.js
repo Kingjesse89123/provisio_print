@@ -1,4 +1,3 @@
-
 var mac
 export default function handler(req, res) {
     if(req.method ===  'POST') {
@@ -9,7 +8,7 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        console.log(req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0')
+        console.log(req.body.status.toString().charAt(0) === '2')
         if(req.body.printingInProgress === false) {
             console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
@@ -56,9 +55,9 @@ export default function handler(req, res) {
 
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
                 .then(response => response.json())
-                .then(res => id = res.data[0].id)
-                .then(res => res.data[0].printer_queue.splice(0,1))
-                .then(res => console.log(res))
+                .then(result => id = result.data[0].id)
+                .then(result => result.data[0].printer_queue.splice(0,1))
+                .then(result => console.log(result))
                 .then((result)=>{
                     fetch(`https://5nn73jb7.directus.app/items/restaurants/${id}`, requestOptions)
                         .then((response2)=> response2.text() )
