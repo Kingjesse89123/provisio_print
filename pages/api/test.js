@@ -8,8 +8,7 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        console.log(req.body.status.toString().charAt(0) === '2')
-        if(req.body.printingInProgress === false) {
+        if(req.body.printingInProgress === false&&req.body.status.toString().charAt(0) === '2') {
             console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
@@ -42,28 +41,20 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
         if(req.method === 'DELETE'){
-            var id
             console.log("deleting")
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-            const requestOptions2 = {
+            var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
             };
 
-
-            fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
-                .then(response => response.json())
-                .then(result => id = result.data[0].id)
-                .then(result => result.data[0].printer_queue.splice(0,1))
-                .then(result => console.log(result))
-                .then((result)=>{
-                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${id}`, requestOptions)
-                        .then((response2)=> response2.text() )
-                        .then(result2 => res.status(200).send("Print Job Done"))
-                        .catch(error => console.log('error', error));
-                })
+            const data = fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions)
+                .then(response => response.text())
+                .then((result) => {return result})
                 .catch(error => console.log('error', error));
+            console.log(data)
+
         }
 }
