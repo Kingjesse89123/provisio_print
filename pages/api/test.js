@@ -3,9 +3,6 @@ var mac
 export default function handler(req, res) {
     if(req.method ===  'POST') {
         console.log("posting")
-        console.log(req.body)
-        console.log(req.body.status)
-        console.log(req.body.printingInProgress)
         mac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
@@ -13,7 +10,6 @@ export default function handler(req, res) {
         };
 
         if(req.body.printingInProgress === false&& req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0') {
-            console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
                 .then(result => result.data[0].printer_queue[0] ? res.status(200).json({
