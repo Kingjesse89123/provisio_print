@@ -59,6 +59,32 @@ export default function handler(req, res) {
                 redirect: 'follow'
             };
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
+                .then((response) => console.log(response.data))
+                .then((result)=>console.log(result.data))
+                .catch(error => console.log('error', error));
+        }
+}
+
+/*
+        if(req.method === 'DELETE'){
+            console.log("deleting")
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+            var requestOptions2 = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+            let raw = ''
+
+            var printerqueue
+            var requestOptions = {
+                method: 'PATCH',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
                 .then((response) => {response !== undefined ? printerqueue = response.data[0].printer_queue : null})
                 .then((result)=>{
                     fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
@@ -68,4 +94,4 @@ export default function handler(req, res) {
                 })
                 .catch(error => console.log('error', error));
         }
-}
+ */
