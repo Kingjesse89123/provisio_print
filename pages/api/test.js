@@ -10,6 +10,7 @@ export default function handler(req, res) {
         };
 
         if(req.body.printingInProgress === false&& req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0') {
+            console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
                 .then(result => result.data[0].printer_queue[0] ? res.status(200).json({
@@ -42,7 +43,6 @@ export default function handler(req, res) {
     }
         if(req.method === 'DELETE'){
             var id
-            var printqueue
             console.log("deleting")
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
