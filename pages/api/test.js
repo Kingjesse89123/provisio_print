@@ -2,14 +2,15 @@
 var mac
 export default function handler(req, res) {
     if(req.method ===  'POST') {
+        console.log(req.body)
         console.log("posting")
         mac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
-
-        if(req.body.printingInProgress === false&& req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0') {
+        console.log(req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0')
+        if(req.body.printingInProgress === false) {
             console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
