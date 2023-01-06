@@ -41,6 +41,8 @@ export default function handler(req, res) {
             .catch(error => console.log('error', error));
     }
         if(req.method === 'DELETE'){
+            var id
+            var printqueue
             console.log("deleting")
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -49,10 +51,8 @@ export default function handler(req, res) {
                 method: 'GET',
                 redirect: 'follow'
             };
-            const raw = JSON.stringify({
-                "printer_queue": []
-            });
-        const requestOptions = {
+
+        let requestOptions = {
             method: 'PATCH',
             headers: myHeaders,
             body: raw,
@@ -60,10 +60,18 @@ export default function handler(req, res) {
         };
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
                 .then(response => response.json())
+                .then(res => id = res.data[0].id)
+                .then(res => res.data[0].printer_queue.splice(0,1))
+                .then(res => requestOptions ={
+                    method: 'PATCH',
+                    headers: myHeaders,
+                    body: res,
+                    redirect:'follow'
+                })
                 .then((result)=>{
-                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
+                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${id}`, requestOptions)
                         .then((response2)=> response2.text() )
-                        .then(result2 => res.status(200).send("Print Job Done")+console.log(result2))
+                        .then(result2 => res.status(200).send("Print Job Done"))
                         .catch(error => console.log('error', error));
                 })
                 .catch(error => console.log('error', error));
