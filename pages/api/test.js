@@ -11,7 +11,8 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        if(req.body.status == '29 a 2 0 0 0 0 2 0 0 0 0' && req.body.printingInProgress === false) {
+        
+        if(req.body.printingInProgress === false) {
             console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
