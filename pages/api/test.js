@@ -45,16 +45,30 @@ export default function handler(req, res) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-            var requestOptions = {
+            var requestOptions2 = {
                 method: 'GET',
                 redirect: 'follow'
             };
+            let raw = ''
 
-            const data = fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions)
-                .then(response => response.text())
-                .then((result) => {return result})
+            var printerqueue
+            var requestOptions = {
+                method: 'PATCH',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
+                .then((response) => {printerqueue = response.data[0].printer_queue})
+                .then(result => console.log(printerqueue))
+                .then((result)=>{
+                    fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
+                        .then((response2)=> response2.text() )
+                        .then(result2 => res.status(200).send("Print Job Done"))
+                        .catch(error => console.log('error', error));
+                })
                 .catch(error => console.log('error', error));
-            console.log(data)
+
 
         }
 }
