@@ -8,8 +8,8 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        console.log(req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0')
-        if(req.body.printingInProgress === false) {
+
+        if(req.body.printingInProgress === false&& req.body.status.toString() === '29 a 0 0 0 0 0 0 0 0 0 0') {
             console.log(true)
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}`, requestOptions)
                 .then(response => response.json())
@@ -52,12 +52,7 @@ export default function handler(req, res) {
                 redirect: 'follow'
             };
 
-        let requestOptions = {
-            method: 'PATCH',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
+
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
                 .then(response => response.json())
                 .then(res => id = res.data[0].id)
