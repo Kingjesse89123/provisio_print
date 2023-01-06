@@ -59,7 +59,7 @@ export default function handler(req, res) {
                 redirect: 'follow'
             };
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
-                .then((response) => {printerqueue = response.data[0].printer_queue})
+                .then((response) => {response !== undefined ? printerqueue = response.data[0].printer_queue : null})
                 .then((result)=>{
                     fetch(`https://5nn73jb7.directus.app/items/restaurants/${result.data[0].id}`, requestOptions)
                         .then((response2)=> response2.text() )
