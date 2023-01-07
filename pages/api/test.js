@@ -62,6 +62,12 @@ export default function handler(req, res) {
         };
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
             .then((response) => response.json())
+            .then(result => {console.log(result.data[0].printer_queue[0].id)
+            })
+            .catch(error => console.log('error', error));
+    }
+        fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
+            .then((response) => response.json())
             .then(result => {
                 fetch(`https://5nn73jb7.directus.app/items/print_jobs/${result.data[0].printer_queue[0].id}`, requestOptions)
                     .then((response2) => response2.text())
