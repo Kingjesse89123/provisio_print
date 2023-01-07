@@ -75,5 +75,5 @@ export default function handler(req, res) {
                     .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
-    }
+    
 }
