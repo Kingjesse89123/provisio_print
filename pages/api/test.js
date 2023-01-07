@@ -59,7 +59,7 @@ export default function handler(req, res) {
                 redirect: 'follow'
             };
             fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
-                .then((response) => console.log(response.data))
+                .then((response) => response.json())
                 .then((result)=>console.log(result.data))
                 .catch(error => console.log('error', error));
         }
