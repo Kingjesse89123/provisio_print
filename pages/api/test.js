@@ -49,9 +49,9 @@ export default function handler(req, res) {
             method: 'GET',
             redirect: 'follow'
         };
-        let raw = {
-            "printer_queue": []
-        };
+        let raw = JSON.stringify({
+            restaurant: null
+        });
 
 
         var requestOptions = {
@@ -61,8 +61,12 @@ export default function handler(req, res) {
             redirect: 'follow'
         };
         fetch(`https://5nn73jb7.directus.app/items/restaurants?filter[printer_mac][_eq]=${mac}&fields=*.*`, requestOptions2)
-            .then((response) => response.json().data[0].id)
-            .then((result) => {console.log(result)
+            .then((response) => response.json())
+            .then((result) => {
+                fetch(`https://5nn73jb7.directus.app/items/print_jobs/${result.data[0].printer_queue[0].id}`, requestOptions)
+                    .then((response2) => response2.text())
+                    .then((result2) => {res.status(200).send("Print Job Done")})
+                    .catch(error => console.log('error', error));
             })
             .catch(error => console.log('error', error));
     }
