@@ -1,8 +1,8 @@
-import {macAddresses} from "../../macaddressess.js";
+import {macaddresses} from "../../macaddressess.js";
 
 export default function handler(req, res) {
-    const {macAddress} = req.query
-    let mac = macaddresses.find(mac => mac.id === macaddress)
+    const {macaddress} = req.query
+    let mac = macAddresses.find(mac => mac.id === macaddress)
     mac = mac.id
     if (req.method === 'POST') {
         console.log(req.body)
