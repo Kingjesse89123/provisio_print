@@ -1,4 +1,4 @@
-import {macaddresses} from "../../macaddresses";
+import {macaddresses} from "../../macaddressess.js";
 
 export default function handler(req, res) {
     const {macaddress} = req.query
