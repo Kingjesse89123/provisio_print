@@ -3,10 +3,10 @@ import {macAddresses} from "../../mac addresses";
 export default function handler(req, res) {
     const {macaddress} = req.query
     let mac = macAddresses.find(mac => mac.id === macaddress)
+    mac = mac.id
     if (req.method === 'POST') {
-        console.log(req.body)
+        console.log(mac)
         console.log("posting")
-        mac = req.body.printerMAC
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -21,7 +21,7 @@ export default function handler(req, res) {
                 }) : res.status(200).json('Printer queue empty'))
                 .catch(error => console.log('error', error));
         } else {
-            res.status(200).json('Printer queue empty')
+            res.status(200).json('Printer is not ready')
         }
     }
     if (req.method === 'GET') {
