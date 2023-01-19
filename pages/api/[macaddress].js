@@ -37,7 +37,7 @@ export default function handler(req, res) {
                 fetch(`https://blueplate.directus.app/assets/${result.data[0].printer_queue[0].print_job}`, requestOptions)
                     .then((response2) => response2.text())
                     .then(result2 => res.status(200).send(result2))
-                    .catch(error => console.log('error', error));
+                    .catch(error => res.status(404).send(error));
             })
             .catch(error => console.log('error', error));
     }
